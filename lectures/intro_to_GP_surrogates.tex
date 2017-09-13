@@ -1,0 +1,52 @@
+\documentclass{beamer}
+
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsthm,amssymb,amsbsy,amsmath,amsfonts,amssymb,amscd}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{array}
+\newcolumntype{N}{@{}m{2pt}@{}}
+\input{style.tex}
+
+\title[Introduction to Gaussian Process Surrogates Models]{ \small MDIS Fall School 2017\\ \vspace{3mm} \Large Introduction to Gaussian Process Surrogate models}
+\institute{Nicolas Durrande, PROWLER.io (nicolas@prowler.io) \\ Rodolphe Le Riche, CNRS -- Mines St-\'Etienne -- LIMOS (leriche@emse.fr)}
+\author[MDIS 2017]{Clermont-Ferrand, Besse-en-Chandesse, 16th of October 2017}
+\date{\null}
+
+\DeclareMathOperator*{\Var}{var}
+\DeclareMathOperator*{\E}{E}
+\DeclareMathOperator*{\Cov}{cov}
+\newcommand\PR[1]{\mathrm{P}\left(#1 \right)}
+\newcommand\PS[1]{{\langle #1 \rangle}_\mathcal{H}}
+\newcommand\PSi[2]{{ \left \langle #1 \right \rangle}_{\! #2}}
+\newcommand\N[1]{{|| #1 ||}_\mathcal{H}}
+\newcommand\Ni[2]{{|| #1 ||}_{\! #2}}
+\newcommand\dx{\, \mathrm{d}}
+\newcommand\textequal{\rule[.4ex]{4pt}{0.4pt}\llap{\rule[.7ex]{4pt}{0.4pt}}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\makeatletter
+\newcommand{\shorteq}{%
+    \settowidth{\@tempdima}{a}% Width of hyphen
+      \resizebox{\@tempdima}{\height}{=}%
+      }
+\makeatother
+
+\definecolor{Orange}{rgb}{0.8, 0.147, 0.0}
+\definecolor{MonBleu}{rgb}{0.212, 0.392, 0.545}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\input{1_stat_models/part_1.tex}
+\input{2_Design_of_experiments/part_2.tex}
+\input{3_gaussian_process_regression/part_3.tex}
+\input{4_optimization/part_4.tex}
+
+\end{document}
