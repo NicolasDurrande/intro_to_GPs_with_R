@@ -1,8 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Context]{Why are statistical models relevant in engineering?}
+\section[Statistical Models]{Statistical models in engineering?}
 \subsection{}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 There is a wide variety of situations where getting data about a system performance can be extremely expensive.
@@ -122,11 +121,6 @@ The fact that $f$ is \textbf{costly to evaluate} changes a lot of things...\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Statistical models]{Statistical models}
-\subsection{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 The principle of statistical modelling is to use the data to build a mathematical approximation of the function.
 \begin{center}
@@ -159,191 +153,15 @@ In the sequel, we will use the following notations :
 	\item The set of observation points will be represented by a $n \times d$ matrix $X=(X_1, ..., X_n)^t$
 	\item The vector of observations will be denoted by $F$ : $F_i=f(X_i)$ (or $F=f(X)$).
 \end{itemize}
-We will now discuss two types of statistical models:
+There are many surrogate methods available on the market
 \begin{itemize}
 	\item Linear regression
+	\item Smoothing splines
 	\item Gaussian process regression
+	\item Neural Networks
+    \item ...
 \end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Linear Regression}
-\subsection{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\textbf{Linear regression} is probably the most commonly used statistical model.\\ \vspace{3mm}
-Given a set of basis functions $B=(b_0, \dots, b_p)$, we assume that the observations come from the probabilistic model
-$$ F = B(X) \beta  + \varepsilon \qquad \qquad \left( \text{i.e. } F_i = \sum_{k=1}^p \beta_k b_k(X_i) + \varepsilon_i \right) $$
-where the vector $\beta$ is unknown, $\varepsilon_i$ are independent and identically distributed and
-$$ B(X)_{(i,j)}=b_j(X_i) $$
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-If we consider a model of the form
-$$m(x) = B(x) \hat{\beta}$$
-the prediction error (Residual Sum of Square) is given by
-$$RSS = (B(X) \hat{\beta}  - F)^t(\hat{\beta} B(X) - F)  \qquad \qquad \left( \text{i.e. } \sum_{k=1}^n ( B(X_i) \hat{\beta} - F_i)^2\right)$$
-
-Finding the optimal value of $\hat{\beta}$ means minimizing a quadratic form. This can be done analytically and we obtain $\hat{\beta} = (B(X)^t B(X))^{-1} B(X)^t F$.\\
-\vspace{3mm}
-The associated linear regression model is thus
-$$m(x) = B(x) (B(X)^t B(X))^{-1} B(X)^t F.$$
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-	If we consider the following observations:
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_0}
-\end{center}
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-	and a set of 3 basis functions:
-	 $$b_0(x)=1,\ b_1(x)=x,\ b_2(x)=x^2$$
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_1}
-\end{center}
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-We obtain $\hat{\beta} = (1.06,-0.61,1.04)$ and the model is:
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_2}
-\end{center}
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-There is of course an error between the true generative function and the model
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_3}
-\end{center}
-Can this error be quantified?
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-The initial assumption is $ F = B(X) \beta  + \varepsilon$ and we have computed an estimator of $\beta$:
-$$\hat{\beta} = (B(X)^t B(X))^{-1} B(X)^t F.$$
-$\hat{\beta}$ can thus be seen as a sample from the random variable:
-$$\hat{\beta} = (B(X)^t B(X))^{-1} B(X)^t (B(X) \beta  + \varepsilon).$$ \\
-\vspace{5mm}
-What about the distribution of $\hat{\beta}$? \pause
-\begin{itemize}
-	\item Its expectation is $\beta$ \alert{$\Rightarrow$} The estimator is unbiased
-	\item Its covariance matrix is $$(B(X)^t B(X))^{-1} B(X)^t \Cov[\varepsilon,\varepsilon^t] B(X) (B(X)^t B(X))^{-1}$$
-	\item If $\varepsilon$ is multivariate normal, then $\hat{\beta}$ is also multivariate normal (not necessarily i.i.d.).
-\end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Sampling in the distribution of $\hat{\beta}$ gives us a large variety of models which represent the uncertainty about our estimation:
-\begin{exampleblock}{Back to the example}
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_4}
-\end{center}
-\end{exampleblock}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Back to the example}
-The previous picture can be summarized by showing the mean of $m$ and $95\%$ confidence intervals
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_5}
-\end{center}
-\end{exampleblock}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Knowing the uncertainty on the model allows to compute an uncertainty on the quantity of interest.
-\begin{exampleblock}{Back to the example}
-For example, if we are interested in the value $x^\star$ minimizing $f(x)$:
-\begin{center}
-  \includegraphics[height=5cm]{1_stat_models/figures/R/linreg_6}
-\end{center}
-\end{exampleblock}
-\alert{The expectation of $x^\star$ \textbf{is not} the input minimizing $m(x).$}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\textbf{\structure{Model validation}} is always of upper importance.\\
-\vspace{3mm}
-The goodness of fit can be measured by the \textbf{coefficient of determination}:
-$$R^2 =  1 - \frac{\Var[prediction\ errors]}{\Var[data]} = 1 - \frac{\sum_i (F_i-m(X_i))^2}{\sum_i (F_i-mean(F))^2}$$
-\begin{center}
-  \includegraphics[height=4cm]{1_stat_models/figures/ink_R2}
-\end{center}
-\alert{Be careful!} A good $R^2$ (ie close to one) does not necessarily mean that the model is good.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-	We've seen that the law of $\hat{\beta}$ is multivariate Gaussian, with its covariance depending on $\varepsilon$:
-	$$(B(X)^t B(X))^{-1} B(X)^t \Cov[\varepsilon,\varepsilon^t] B(X) (B(X)^t B(X))^{-1}$$
-	\textbf{Ordinary regression:} suppose now $\Cov[\varepsilon,\varepsilon^t]=\sigma^2I_d$ then
-	$$ \Cov[\hat{\beta},\hat{\beta}^t] = \sigma^2(B(X)^tB(X))^{-1}$$
-	and from this, we now that
-	$$ \frac{\hat{\beta_i}}{\sqrt{\hat{\sigma}^2(B(X)^tB(X))^{-1}_{(i,i)}}}\text{ is student}$$
-	with the standard variance estimator
-	$$ \hat{\sigma}^2=\frac{1}{n-p}\lVert F-m(X)\rVert^2 $$
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-The influence of one basis function can be tested using \textbf{p-values}:\\
-\qquad $H_0$: The basis function $b_i$ has no influence (i.e. $\beta_i=0$)\\
-\qquad p-values: probability of observing a larger estimate
-\begin{center}
-  \includegraphics[height=4.5cm]{1_stat_models/figures/ink_pvalue}
-\end{center}
-The smaller the p-value is, the less $\hat{\beta}$ is likely to be due to chance.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-We could dedicate the entire course to linear regression models...
-\begin{columns}[c]
-\column{5cm}
-\begin{itemize}
-	\item model validation
-	\item choice of basis functions
-\end{itemize}
-\column{6cm}
-\begin{itemize}
-	\item influence of input locations
-	\item ...
-\end{itemize}
-\end{columns}
-\vspace{10mm}
-We will just stress a few \textbf{pros and cons of these models}:
-\begin{itemize}
-  \item[+] provide a good noise filtering
-  \item[+] are easy to interpret
-  \item[] \vspace{-5mm}
-  \item[$-$] are not flexible (need to choose the basis functions)
-  \item[$-$] do not interpolate
-  \item[$-$] may explode when using high order polynomials (over-fitting)
-\end{itemize}
+In this course we will focus on \textbf{Gaussian Process Regression}.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -353,7 +171,7 @@ We will just stress a few \textbf{pros and cons of these models}:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 \vspace{0.75cm}
-\structure{This section will be organised in 3 subsections:}
+\structure{This section is be organised in 3 subsections:}
 \vspace{0.5cm}
 \begin{enumerate}
     \item Reminders on Multivariate normal distribution
@@ -564,7 +382,7 @@ Let X be a set 100 regularly spaced points over the input space of $Z$.
 \end{itemize}
 \end{exampleblock}
 \vspace{5mm}
-$\Rightarrow$ Shiny App
+$\Rightarrow$ Shiny App: \url{https://github.com/NicolasDurrande/shinyApps}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

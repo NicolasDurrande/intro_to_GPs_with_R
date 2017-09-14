@@ -168,7 +168,7 @@ We can also look at the residual distribution. For leave-one-out, there is no jo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Making new from old}
+\section{Kernel Design}
 \subsection{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,18 +393,6 @@ pred. var. with kernel sum
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Sum of kernels over tensor space}
-This property can be used to construct a design of experiment that covers the space with only $cst \times d$ points.
-\begin{center}
-\includegraphics[height=5cm]{3_gaussian_process_regression/figures/python/kernelmodels-predaxe}\\
-Prediction variance
-\end{center}
-\vfill
-\end{frame}
-
-% \subsection{Product of kernels}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Product over the same space}
 \begin{block}{Property}
 \begin{equation*}
@@ -540,212 +528,18 @@ Sample paths
 \end{frame}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Bochner]{Bochner's theorem}
-\subsection{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \subsection{Bochner's theorem}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{theorem}[Bochner]
-A continuous stationary function $k(x,y)=\tilde{k}(x-y)$ is positive definite if and only if $\tilde{k}$ is the Fourier transform of a finite positive measure:
-\begin{equation*}
-\tilde{k}(t) = \int_\mathds{R} e^{-i \omega t} \mathrm{d} \mu(\omega)
-\end{equation*}
-\end{theorem}
-\vspace{5mm}
-This result is very useful to prove the positive definiteness of stationary functions.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-\begin{columns}[c]
-\begin{column}{7cm}
-\ \\ \  \\
-We consider the following measure:\\
-\vspace{2.3cm}
-Its Fourier transform gives $\tilde{k}(t) = \displaystyle \frac{\sin(t)}{t}$ :
-\end{column}
-\begin{column}{5cm}
-\begin{center}
-\includegraphics[width=2.5cm]{3_gaussian_process_regression/figures/python/Bochner-musinc}
-\end{center}
-
-\begin{center}
-\includegraphics[width=2.5cm]{3_gaussian_process_regression/figures/python/Bochner-ksinc}
-\end{center}
-\end{column}
-\end{columns}
-\vspace{2mm}
-As a consequence, $\displaystyle k(x,y) = \frac{\sin(x-y)}{x-y}$
-is a valid covariance function.
-\end{example}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Bochner theorem can be used to prove the positive definiteness of many usual stationary kernels \vspace{2mm}
+\begin{frame}{Other kernel design methods}
+There are two other popular methods for kernel design:
 \begin{itemize}
-  \item The Gaussian is the Fourier transform of itself \\
-  \qquad $\Rightarrow$ it is psd.
-  \item Matern kernels are the Fourier transforms of $\frac{1}{(1+\omega^2)^p}$ \\
-  \qquad $\Rightarrow$ they are psd.
-  \item the constant function is the Fourier transform of $\delta_{x,y}$ \\
-  \qquad $\Rightarrow$ it is psd.
-\end{itemize} \vspace{5mm}
-% It can also be generalised to distributions: \vspace{2mm}
-% \begin{itemize}
-%   \item $\delta_{x,y}$ is the Fourier transform of the constant function \\
-%   \qquad $\Rightarrow$ it is psd.
-% \end{itemize}
+    \item Bochner Theorem\\
+There is an equivalence between positive measures and stationnary positive definite functions. 
+    \item Linear operators\\
+If the function to approximate has particular properties that can be obtained via a linear transform, it is possible to build a GP with the wanted properties. For example, one can build symmetric GPs or GPs with integral equal to zero.
+\end{itemize}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Spectral approximation with a mixture of Gaussian (A. Wilson, ICML 2013)}
-The inverse Fourier transform of a (symmetrised) non centred Gaussian is:
-\begin{columns}[c]
-\begin{column}{5cm}
-\begin{center}
-$\mu(\omega)$ \\
-\includegraphics[width=3cm]{3_gaussian_process_regression/figures/python/Bochner-wilsonmu}
-\end{center}
-\end{column}
-\begin{column}{2cm}
-\begin{center}
-$\stackrel{\longrightarrow}{\mathcal{F}}$
-\end{center}
-\end{column}
-\begin{column}{5cm}
-\begin{center}
-$\tilde{k}(t)$\\
-\includegraphics[width=3cm]{3_gaussian_process_regression/figures/python/Bochner-wilsonk}
-\end{center}
-\end{column}
-\end{columns}
-\vspace{3mm}
-This can be generalised to a measure based on the sum of Gaussians.
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Spectral approximation with a mixture of Gaussian (A. Wilson, ICML 2013)}
-We obtain a kernel that is parametrised by the means and the bandwidths of Gaussian bells in the measure space:
-\begin{columns}[c]
-\begin{column}{5cm}
-\begin{center}
-$\mu(\omega)$ \\
-\includegraphics[width=3cm]{3_gaussian_process_regression/figures/python/Bochner-wilsonmus}
-\end{center}
-\end{column}
-\begin{column}{2cm}
-\begin{center}
-$\stackrel{\longrightarrow}{\mathcal{F}}$
-\end{center}
-\end{column}
-\begin{column}{5cm}
-\begin{center}
-$\tilde{k}(t)$\\
-\includegraphics[width=3cm]{3_gaussian_process_regression/figures/python/Bochner-wilsonks}
-\end{center}
-\end{column}
-\end{columns}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Spectral approximation with a mixture of Gaussian (A. Wilson, ICML 2013)}
-The sample paths have the following aspect:\\
-\vspace{5mm}
-\begin{center}
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/Bochner-wilsonktraj}
-\end{center}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Linear operator]{Effect of a linear operator}
-\subsection{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Effect of a linear operator}
-\begin{block}{Property}
-Let $L$ be a linear operator that commutes with the covariance, then
-$k(x,y) = L_x(L_y(k_1(x,y)))$ is a kernel.
-\end{block}
-\begin{example}
-  We want to approximate a function $[0,1] \rightarrow \mathds{R}$ that is symmetric with respect to $0.5$.
-We will consider 2 linear operators:
-\begin{equation*}
- L_1 : f(x) \rightarrow
-\left\{
-\begin{aligned}
- f(x) \text{\qquad}  & x < 0.5 \\
- f(1-x) \text{\qquad}   & x \geq 0.5
-\end{aligned}
-\right.
-\end{equation*}
-$$ L_2 : f(x) \rightarrow \frac{f(x) + f(1-x)}{2}.$$
-\textbf{Exercice:} Compute the kernel associated to the second operator.
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Effect of a linear operator: example [Ginsbourger 2013]}
-Examples of associated sample paths are
-
-\begin{columns}[c]
-\begin{column}{5cm}
-\begin{center}
- $k_1 = L_1(L_1(k))$
-\end{center}
- \includegraphics[height=5cm]{3_gaussian_process_regression/figures/R/p2-sym1}
-\end{column}
-\begin{column}{5cm}
-\begin{center}
- $k_2= L_2(L_2(k))$
-\end{center}
- \includegraphics[height=5cm]{3_gaussian_process_regression/figures/R/p2-sym2}
-\end{column}
-\end{columns}
-The differentiability is not always respected!
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Effect of a linear operator}
-These linear operator are projections onto a space of symmetric functions:
-\begin{center}
-\vspace{0.5cm}
- \includegraphics[height=2cm]{3_gaussian_process_regression/figures/latexdraw/proj-sym}
-\vspace{0.5cm}
-\end{center}
-Is there an optimal projection?\\
-\vspace{0.5cm}
-\alert{$\Rightarrow$ This can be difficult... but it raises interesting questions!}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Effect of a linear operator}
-Can we construct a GP such that the integrals of the paths are null?\\ \vspace{3mm}
-We can think of the following application:
-$$ L : f(x) \rightarrow f(x) - \int f(s) \dx s.$$
-More generally, for all $g: [0,1] \rightarrow \mathds{R}$, the application
-$$ L_g : f(x) \rightarrow f(x) - \frac{g(x)}{\int g(s) \dx s}\int f(s) \dx s$$
-will center $f$. It turns out that the optimal $g$ is $g(x) =\int k(x,s) \dx s$
-% $$ g(x) = \frac{\int k(x,s) \dx s}{\iint k(s,t) \dx s \dx s} $$
-\begin{exampleblock}{Exercice}
-\begin{enumerate}
-	\item Compute the associated kernel.
-	\item What is the distribution of $Z|\int Z = 0$ ?
-\end{enumerate}
-\end{exampleblock}
-\end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section[Exotic obs.]{Adding ``exotic'' observations}
 \subsection{}
