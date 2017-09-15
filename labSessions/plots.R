@@ -19,12 +19,12 @@ darkPurple <- "#5c3566" ; darkBlue <- "#204a87" ; darkGreen <- "#4e9a06" ; darkC
 #' @examples
 #' n <- 5
 #' p <- 101
-#' x <- matrix(seq(from=0, to=1, length=m))
+#' x <- matrix(seq(from=0, to=1, length=p))
 #' X <- matrix(seq(from=0.1, to=0.9, length=n))
 #' F <- matrix(c(0.5, 0, 1.5, 3, 2))
 #' 
 #' pred <- predGPR(x,X,F,kGauss)
-#' plot(x,pred)
+#' plotGPR(x,pred)
 #' 
 #' @export
 plotGPR <- function(x,pred,xlab="",ylab="",ylim=NULL,add=FALSE, plot_observation_points=TRUE){
