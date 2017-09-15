@@ -2,6 +2,7 @@ source("kernels.R")
 source("models.R")
 source("likelihood.R")
 source("plots.R")
+source("EI.R")
 
 # Generate simple Data
 X <- matrix(seq(from=0.1, to=0.9, length=5))
@@ -15,7 +16,12 @@ plotGPR(x,pred)
 
 # optimize the model parameters
 logLikelihood(c(1,.2), kern=kMat52, X=X, F=F)
-opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, X=X, F=F)
+opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, X=X, F=F, control=list(fnscale=-1))
+param_opt <- opt_out$par
 
-pred <- predGPR(x, X, F, kMat52, param=opt_out$par)
+pred <- predGPR(x, X, F, kMat52, param_opt)
 plotGPR(x,pred)
+
+# Compute the expected improvement
+ei <- EI(x, X, F, kMat52, param_opt)
+plot(x, ei, type='l', main="Expected Improvement", col=darkRed)

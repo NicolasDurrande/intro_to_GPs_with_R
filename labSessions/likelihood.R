@@ -2,13 +2,13 @@
 #'
 #' Log-likelihood of some parametres of a GP Given some observations
 #' 
-#' @param vector corresponding to the concatenation of the parameters of the kernel and the noise kernel.
+#' @param vector corresponding to the concatenation of the parameters of the kernel and the noise kernel (if not NULL).
 #' @param kern covariance function of the GP prior for the signal. 
-#' @param kernNoise covariance function of the GP prior for the noise. 
 #' @param X $n \times d$ matrix of the design of experiments (\code{n} is the number of points and \code{d} is the input space dimension).
 #' @param F $n \times 1$ matrix corresponding to the values of \code{f} at \code{X}.
+#' @param kernNoise covariance function of the GP prior for the noise (can be NULL or kWhite). 
 #' 
-#' @return a list with the mean (\code{n*1}-matrix) and the covariance matrix (\code{n*n}) of the posterior distribution at \code{x}. 
+#' @return scalar corresponding to the log-likelihood. 
 #' 
 #' @examples
 #' 
@@ -18,7 +18,7 @@
 #' 
 #' # optimize the model parameters
 #' logLikelihood(c(1,.2), kern=kMat52, X=X, F=F)
-#' opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, X=X, F=F)
+#' opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, X=X, F=F, control=list(fnscale=-1))
 #' 
 #' @export
 logLikelihood <- function(params,kern,X,F,kernNoise=NULL){

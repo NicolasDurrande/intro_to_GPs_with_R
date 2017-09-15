@@ -24,7 +24,7 @@ EI <- function(x,X,F,kern,param=NULL,kernNoise=kWhite,paramNoise=0){
   kXX_1 <- solve(kern(X,X,param) + kernNoise(X,X,paramNoise))
   m <- kxX %*% kXX_1 %*% F
   var <- rep(kern(x[1,,drop=FALSE],x[1,,drop=FALSE],param) - rowSums((kxX %*% kXX_1)*kxX))
-  sd <- sqrt(pmax(0,var))
+  sd <- sqrt(pmax(1e-12,var))
   u <- (min(F) - m)/sd
   ei <- sd * (u * pnorm(u) + dnorm(u))
   return(ei)
