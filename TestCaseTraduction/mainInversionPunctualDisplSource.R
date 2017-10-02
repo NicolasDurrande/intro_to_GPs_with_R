@@ -21,6 +21,23 @@ p = 20 # Source overpressure in MPa
 ####### data input done #########
 
 data <- readMat('dem.mat')
+nrow <- 1255
+ncol <- 1159
+
 
 # Compute surface displacements
-U <- mogi_3D(G,nu,xs,ys,zs,a,p,xi,yi,zi)
+U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
+
+# contour plot on a regular grid
+xvec <- data$xi[seq(0,ncol-1)*nrow+1]
+yvec <- data$yi[seq(nrow,1)]
+uxmat <- matrix(data=U$x,nrow=nrow,ncol=ncol)
+uxmat <- uxmat[nrow(uxmat):1,]
+image(xvec,yvec,t(uxmat))
+contour(xvec,yvec,t(uxmat),add=TRUE,nlevels=20)
+#
+uzmat <- matrix(data=U$z,nrow=nrow,ncol=ncol)
+uzmat <- uzmat[nrow(uxmat):1,]
+image(xvec,yvec,t(uzmat))
+contour(xvec,yvec,t(uzmat),add=TRUE,nlevels=20)
+
