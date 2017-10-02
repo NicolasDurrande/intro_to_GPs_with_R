@@ -6,6 +6,7 @@
 
 rm(list=ls()) #  cleaning up
 
+library(R.matlab)
 source("./mogi_3D.R")
 
 ####### data input #############
@@ -18,6 +19,8 @@ a = 500 # source radius
 p = 20 # Source overpressure in MPa
 
 ####### data input done #########
+
+data <- readMat('dem.mat')
 
 # Compute surface displacements
 U <- mogi_3D(G,nu,xs,ys,zs,a,p,xi,yi,zi)
