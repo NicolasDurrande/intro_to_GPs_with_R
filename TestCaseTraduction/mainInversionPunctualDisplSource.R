@@ -17,7 +17,7 @@ ys = 7650300 # Y location of source in UTM
 zs = 0 # Elevation of source with respect to sea level
 a = 500 # source radius
 p = 20 # Source overpressure in MPa
-nlos = c(-0.664,-0.168,0.728) # cosines of land observing satellite
+nlos = c(-0.664,-0.168,0.728) # vector of direction of line of sight (satellite)
 
 ####### data input done #########
 
@@ -33,7 +33,7 @@ yvec <- data$yi[,1]
 
 # Compute surface displacements
 U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
-
+ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
 
 ########### PLOTS ################
 # PLOTS on regular grid
@@ -41,10 +41,16 @@ U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
 # 3D rgl plot the landscape
 library("rgl") # library for plots
 open3d()
-surface3d(xvec, yvec, t(data$zi), col= rainbow(16)[2])
+# associate ulos to a matrix of colours
+nbcol<-128
+uloscol <- floor((ulos-min(ulos))/(max(ulos)-min(ulos))*(nbcol-1)+1)
+colorlut <- rainbow(nbcol) # ulos color lookup table
+zcol <- colorlut[uloscol]
+surface3d(xvec, yvec, t(data$zi), color=t(zcol))
+# surface3d(xvec, yvec, t(data$zi), col= rainbow(16)[2])
 # title3d(nameoffun, col="blue", font=4)
 decorate3d()
-# rgl.snapshot("./fileofplot.png", fmt="png", top=T)
+rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
 # contour plots of displacements
 par(mfrow=c(1,3))
@@ -59,3 +65,8 @@ title("v")
 image(xvec,yvec,t(U$z),xlab="x",ylab="y")
 contour(xvec,yvec,t(U$z),add=TRUE,nlevels=20)
 title("w")
+#
+par(mfrow=c(1,1))
+image(xvec,yvec,t(ulos),xlab="x",ylab="y")
+contour(xvec,yvec,t(ulos),add=TRUE,nlevels=20)
+title("Displ. projected on LOS")
