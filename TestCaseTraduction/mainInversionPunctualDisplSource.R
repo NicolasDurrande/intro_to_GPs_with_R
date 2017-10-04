@@ -40,16 +40,25 @@ ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
 
 # 3D rgl plot the landscape
 library("rgl") # library for plots
-open3d()
+#open3d()
 # associate ulos to a matrix of colours
-nbcol<-128
+nbcol<-512
 uloscol <- floor((ulos-min(ulos))/(max(ulos)-min(ulos))*(nbcol-1)+1)
+# uloscol <- floor((data$zi-min(data$zi))/(max(data$zi)-min(data$zi))*(nbcol-1)+1) # colours representing elevation
 colorlut <- rainbow(nbcol) # ulos color lookup table
-zcol <- colorlut[uloscol]
-surface3d(xvec, yvec, t(data$zi), color=t(zcol))
-# surface3d(xvec, yvec, t(data$zi), col= rainbow(16)[2])
+zcol <- colorlut[t(uloscol)]
+surface3d(xvec, yvec, t(data$zi), color=zcol)
 # title3d(nameoffun, col="blue", font=4)
-decorate3d()
+# decorate3d()
+# plot vector of line of sight
+#   find highest point
+highcoord <- arrayInd(ind=which.max(data$zi),.dim=dim(data$zi))
+m1 <- c(data$xi[highcoord],data$yi[highcoord],data$zi[highcoord])
+m2 <- m1 + nlos*5000
+M = t(matrix(c(m1,m2),nrow=3))
+# rgl.lines(x=M)
+lines3d(x=M,col=c("black"),lwd=2)
+text3d(((m1+m2)/2+1000*c(1,1,1)),texts = "LOS",cex=2)
 rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
 # contour plots of displacements
