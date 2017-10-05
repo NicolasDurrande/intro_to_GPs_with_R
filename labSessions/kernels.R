@@ -108,7 +108,7 @@ kExp <- function(x,y,param=NULL){
 }
 
 
-#' Gaussian kernel (i.e. RBF, squred exponentail, exponentiated quadratic)
+#' Gaussian kernel (i.e. RBF, squared exponential, exponentiated quadratic)
 #'
 #' This covariance function can also be used to compute a covariance matrice between two sets of points.
 #' 
