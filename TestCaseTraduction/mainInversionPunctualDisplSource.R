@@ -17,21 +17,29 @@ source("./mogi_3D.R")
 source("../labSessions/kernels.R")
 
 ####### input for variables identification ###########
-n2ind <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
+n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
 nbvar <- 5
 # optimum
 xstar <- NA
-xstar[n2ind$xs] <- 367000 # X location of source in UTM coordinates
-xstar[n2ind$ys] <- 7650300 # Y location of source in UTM
-xstar[n2ind$zs] <- 0 # Elevation of source with respect to sea level
-xstar[n2ind$a] <- 500 # source radius
-xstar[n2ind$p] <- 20 # Source overpressure in MPa
+xstar[n2i$xs] <- 367000 # X location of source in UTM coordinates
+xstar[n2i$ys] <- 7650300 # Y location of source in UTM
+xstar[n2i$zs] <- 0 # Elevation of source with respect to sea level
+xstar[n2i$a] <- 500 # source radius
+xstar[n2i$p] <- 20 # Source overpressure in MPa
+# order of magnitude of the variables 
+# (different from 0, to be used when scaling, setting bounds...)
+xmag <- NA
+xmag[n2i$xs] <- 367000 # X location of source in UTM coordinates
+xmag[n2i$ys] <- 7650300 # Y location of source in UTM
+xmag[n2i$zs] <- 1000 # Elevation of source with respect to sea level
+xmag[n2i$a] <- 500 # source radius
+xmag[n2i$p] <- 20 # Source overpressure in MPa
 # initial point (for an identification)
-xinit<-xstar*c(0.6,1.2,1.3,0.8,0.8)
+xinit<-xstar+c(0.2,-0.2,-0.3,0.5,-0.4)*xmag
 # bounds on variables
 xmax <- xstar*rep(2,times=nbvar)
   
-zvar <- list(n2ind=n2ind, x=xinit)
+zvar <- list(n2i=n2i, x=xinit)
 
 
 ####### load data ###########
