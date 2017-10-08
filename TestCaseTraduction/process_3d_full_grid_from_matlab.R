@@ -3,10 +3,9 @@
 # of a punctual displacements source from 3D data on a full grid of points
 #
 # The root file is 'fullgrid_xyz.mat', which is a matlab file and requires 
-# the R.matlab package to be read. This file has been translated into 
+# the R.matlab package to be read. This file is translated into 
 # a csv file for larger cross-compatibility (if someone wants to load the data with,
-# say, python), so that any matlab dependency (R.matlab) is removed. 
-# The csv file is "fullgrid_xyzulos.csv".
+# say, python). The csv file is "fullgrid_xyzulos.csv".
 #
 # Valerie Cayol, Rodolphe Le Riche, Nicolas Durrande
 #
@@ -29,40 +28,19 @@ nlos = c(-0.664,-0.168,0.728) # vector of direction of line of sight (satellite)
 
 ####### data input done #########
 
+data <- readMat('fullgrid_xyz.mat')
+nrowdata <- nrow(data$xi)
+ncoldata <- ncol(data$xi)
+# for R plots, need to permute the order of the rows (increasing y as a vector)
+# no need to permute the xi rows, they are all the same
+data$yi <- data$yi[seq(nrowdata,1),]
+data$zi <- data$zi[seq(nrowdata,1),]
+xvec <- data$xi[1,]
+yvec <- data$yi[,1]
 
-
-# # VERSION reading data from matlab file
-# data <- readMat('fullgrid_xyz.mat')
-# nrowdata <- nrow(data$xi)
-# ncoldata <- ncol(data$xi)
-# # for R plots, need to permute the order of the rows (increasing y as a vector)
-# # no need to permute the xi rows, they are all the same
-# data$yi <- data$yi[seq(nrowdata,1),]
-# data$zi <- data$zi[seq(nrowdata,1),]
-# xvec <- data$xi[1,] 
-# yvec <- data$yi[,1] 
-# 
-# # Compute surface displacements
-# U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
-# ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
-
-# # How the csv file "fullgrid_xyzulos.csv" was created
-# # Note that nrowdata <- 1255 and ncoldata <- 1159
-# datacsv <- matrix(NA,nrow=nrowdata*ncoldata,ncol=4)
-# datacsv[,1] <- data$xi
-# datacsv[,2] <- data$yi
-# datacsv[,3] <- data$zi
-# datacsv[,4] <- ulos
-# write.csv(datacsv, file="fullgrid_xyzulos.csv",row.names=FALSE)
-
-# dimensions associated to the file "fullgrid_xyzulos.csv"
-nrowdata <- 1255
-ncoldata <- 1159
-datacsv <- read.csv(file="fullgrid_xyzulos.csv")
-xi <- as.matrix(datacsv[,1])
-yi <- as.matrix(datacsv[,2])
-zi <- as.matrix(datacsv[,3])
-ulos <- as.matrix(datacsv[,4])
+# Compute surface displacements
+U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
+ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
 
 ########### PLOTS ################
 # PLOTS on regular grid
