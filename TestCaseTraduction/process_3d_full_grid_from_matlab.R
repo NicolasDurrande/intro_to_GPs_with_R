@@ -42,6 +42,16 @@ yvec <- data$yi[,1]
 U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
 ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
 
+# # How the csv file "fullgrid_xyzulos.csv" was created
+# # Note that nrowdata <- 1255 and ncoldata <- 1159
+# datacsv <- matrix(NA,nrow=nrowdata*ncoldata,ncol=4)
+# datacsv[,1] <- data$xi
+# datacsv[,2] <- data$yi
+# datacsv[,3] <- data$zi
+# datacsv[,4] <- ulos
+# write.csv(datacsv, file="fullgrid_xyzulos.csv",row.names=FALSE)
+
+
 ########### PLOTS ################
 # PLOTS on regular grid
 

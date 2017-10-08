@@ -1,68 +1,36 @@
 ###########################
-# Scripts for generating data files and plotting displacements
+# Scripts for plotting displacements
 # of a punctual displacements source from 3D data on a full grid of points
 #
-# The root file is 'fullgrid_xyz.mat', which is a matlab file and requires 
-# the R.matlab package to be read. This file has been translated into 
-# a csv file for larger cross-compatibility (if someone wants to load the data with,
-# say, python), so that any matlab dependency (R.matlab) is removed. 
-# The csv file is "fullgrid_xyzulos.csv".
+# The root file is 'fullgrid_xyz.csv', which is a cvs file.
+# Note that the number of rows and columns used to create (and lost ;-( ) 
+# in the file are nrowdata <- 1255 and ncoldata <- 1159 and 
+# the line of sight cosines are 
+#   nlos = c(-0.664,-0.168,0.728) 
 #
-# Valerie Cayol, Rodolphe Le Riche, Nicolas Durrande
+# Rodolphe Le Riche, Valerie Cayol, Nicolas Durrande
 #
 ###########################
 
 rm(list=ls()) #  cleaning up
 
-library(R.matlab)
-source("./mogi_3D.R")
-
-####### data input #############
-G = 2000 # Shear modulus in MPa
-nu = 0.25 # Poisson's ratio
-xs = 367000 # X location of source in UTM coordinates
-ys = 7650300 # Y location of source in UTM
-zs = 0 # Elevation of source with respect to sea level
-a = 500 # source radius
-p = 20 # Source overpressure in MPa
-nlos = c(-0.664,-0.168,0.728) # vector of direction of line of sight (satellite)
-
-####### data input done #########
-
-
-
-# # VERSION reading data from matlab file
-# data <- readMat('fullgrid_xyz.mat')
-# nrowdata <- nrow(data$xi)
-# ncoldata <- ncol(data$xi)
-# # for R plots, need to permute the order of the rows (increasing y as a vector)
-# # no need to permute the xi rows, they are all the same
-# data$yi <- data$yi[seq(nrowdata,1),]
-# data$zi <- data$zi[seq(nrowdata,1),]
-# xvec <- data$xi[1,] 
-# yvec <- data$yi[,1] 
-# 
-# # Compute surface displacements
-# U <- mogi_3D(G,nu,xs,ys,zs,a,p,data$xi,data$yi,data$zi)
-# ulos <- nlos[1]*U$x+nlos[2]*U$y+nlos[3]*U$z
-
-# # How the csv file "fullgrid_xyzulos.csv" was created
-# # Note that nrowdata <- 1255 and ncoldata <- 1159
-# datacsv <- matrix(NA,nrow=nrowdata*ncoldata,ncol=4)
-# datacsv[,1] <- data$xi
-# datacsv[,2] <- data$yi
-# datacsv[,3] <- data$zi
-# datacsv[,4] <- ulos
-# write.csv(datacsv, file="fullgrid_xyzulos.csv",row.names=FALSE)
-
 # dimensions associated to the file "fullgrid_xyzulos.csv"
 nrowdata <- 1255
 ncoldata <- 1159
+# ulos (the 4th column) was generated with
+nlos = c(-0.664,-0.168,0.728) # vector of direction of line of sight (satellite)
+
+#
 datacsv <- read.csv(file="fullgrid_xyzulos.csv")
-xi <- as.matrix(datacsv[,1])
-yi <- as.matrix(datacsv[,2])
-zi <- as.matrix(datacsv[,3])
-ulos <- as.matrix(datacsv[,4])
+if (nrow(datacsv)!=nrowdata*ncoldata) stop("nrow(data file) not equal to nrowdata*ncoldata")
+if (ncol(datacsv)!=4) stop("there should be 4 columns in data file")
+data<-list()
+data$xi <- matrix(datacsv[,1],nrow=nrowdata)
+data$yi <- matrix(datacsv[,2],nrow=nrowdata)
+data$zi <- matrix(datacsv[,3],nrow=nrowdata)
+ulos <- matrix(datacsv[,4],nrow=nrowdata)
+xvec <- data$xi[1,]
+yvec <- data$yi[,1]
 
 ########### PLOTS ################
 # PLOTS on regular grid
@@ -91,20 +59,7 @@ text3d(((m1+m2)/2+1000*c(1,1,1)),texts = "LOS",cex=2)
 rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
 # contour plots of displacements
-par(mfrow=c(1,3))
-image(xvec,yvec,t(U$x),xlab="x",ylab="y")
-contour(xvec,yvec,t(U$x),add=TRUE,nlevels=20)
-title("u")
-#
-image(xvec,yvec,t(U$y),xlab="x",ylab="y")
-contour(xvec,yvec,t(U$y),add=TRUE,nlevels=20)
-title("v")
-#
-image(xvec,yvec,t(U$z),xlab="x",ylab="y")
-contour(xvec,yvec,t(U$z),add=TRUE,nlevels=20)
-title("w")
-#
-par(mfrow=c(1,1))
+# par(mfrow=c(1,1))
 image(xvec,yvec,t(ulos),xlab="x",ylab="y")
 contour(xvec,yvec,t(ulos),add=TRUE,nlevels=20)
 title("Displ. projected on LOS")

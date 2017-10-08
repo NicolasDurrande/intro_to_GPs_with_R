@@ -11,26 +11,33 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \title{Metamodels and displacements  inversion \\ R installation notes}
-\author{Rodolphe Le Riche and Nicolas Durrande}
+\author{Rodolphe Le Riche, Nicolas Durrande and Valérie Cayol}
 %\date{15 february 2017}
 \maketitle
 
 \section{TODOs}
 \begin{itemize}
-\item Translate data files (\texttt{*.dat}) into R data files to avoid the \texttt{R.matlab} package.
+\item empty list ;-)
 \end{itemize}
 
 \section{Prerequisites}
 \begin{enumerate}
 \item Have R available on your computer, cf. \url{https://www.r-project.org/}
 \item Optionally (but really helpful) have rstudio installed, cf. \url{https://www.rstudio.com}
-\item For loading the data, which are in matlab format, install the ``R.matlab'' package (either from 
-Tools / Install Package in rstudio or with the command \texttt{install.packages("ggplot2")}.
+\item Optional: if you want to load the data that are in matlab format (\texttt{file\_name.mat}), 
+install the ``R.matlab'' package (either from Tools / Install Package in rstudio or with the command \texttt{install.packages("ggplot2")}. But you can also load directly the ascii csv file (\texttt{file\_name.csv}) from R
 \end{enumerate}
 
-\section{Chronological steps}
+\section{Running the demo step by step}
 %\begin{itemize}
 %\end{itemize}
 
+\section{Files list}
+\begin{itemize}
+\item \texttt{mogi\_3D.R}~: calculate displacements on a digital terrain model from a point-wise spherical source.
+\item \texttt{plots\_3d\_full\_grid.R}~: Load a csv file (full grid), and plots its 3d data.
+\item \texttt{process\_3d\_full\_grid\_from\_matlab.R}~: Load a matlab file (full grid), processes it so that it is plotted and (commented out but working) saved in csv format. Displacements are calculated with \texttt{mogi\_3D.R}.
+\item data files ending in \texttt{.mat} (matlab format) or \texttt{.csv} (csv format).
+\end{itemize}
 
 \end{document}
