@@ -21,6 +21,7 @@
 #' opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, Xd=Xd, F=F, control=list(fnscale=-1))
 #' 
 #' @export
+# rodo change X into Xd as function parameter name to avoid confusion when used with apply(X=)
 logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   if(is.null(kernNoise)){
     kXX <- kern(Xd,Xd,params) 
@@ -31,6 +32,8 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   }else{
     stop("the (log-)likelihood is only implemented for kernNoise=NULL and kernNoise=kWhite")    
   }
-  LL <- -1/2*nrow(Xd)*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX)%*%F
+  ndata <- nrow(Xd)
+  # rodo add e-12 on the diagonal to avoid singularity
+  LL <- -1/2*ndata*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX+1.e-8*diag(ndata))%*%F
   return(LL)
 }

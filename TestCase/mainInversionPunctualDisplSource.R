@@ -47,9 +47,9 @@ xmax[n2i$xs]<-366000
 xmin[n2i$ys]<-7649000
 xmax[n2i$ys]<-7651000
 xmin[n2i$zs]<- -3000
-xmax[n2i$zs]<-2000
+xmax[n2i$zs]<-1000
 xmin[n2i$a]<- 50
-xmax[n2i$a]<- 2000
+xmax[n2i$a]<- 1000
 xmin[n2i$p]<- -500
 xmax[n2i$p]<-500
 #
@@ -85,8 +85,9 @@ library(lhs)
 nbinit <- 100 # number of points in the initial design of experiments
 set.seed(0)
 # do an optimal Latin Hypercube Sampling
+Xnorm <- optimumLHS(nbinit, nbvar)
 X <- matrix(rep(xmin,times=nbinit),byrow = T,ncol=nbvar) + 
-  optimumLHS(nbinit, nbvar) * matrix(rep((xmax-xmin),times=nbinit),byrow = T,ncol=nbvar)
+  Xnorm * matrix(rep((xmax-xmin),times=nbinit),byrow = T,ncol=nbvar)
 X <- data.frame(X)
 names(X) <- varnames
 wls <- apply(X, 1, wls_ulos)
@@ -108,7 +109,25 @@ norm_wls <- (wls - mean_wls)/std_wls
 
 # normalize the input so that all variables are between 0 and 1
 
-# optimize the model parameters
+# # optimize the model parameters by repeating local searches started from random initial points
+# tmin <- rep(0.0001,times=nbvar+1)
+# tmax <- c(100,rep(1000,times=nbvar))
+# nbtry <- 100
+# bestLL <- -Inf
+# for (i in 1:nbtry){
+#   tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
+#   cat(i,"theta_init=",tinit)
+#   # opt_out <- optim(c(1,rep(1,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, method = "Nelder-Mead",
+#   #                  control=list(fnscale=-1,maxit=2000))
+#   # opt_out <- optim(c(1,rep(800,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, method = "L-BFGS-B", 
+#   #                  control=list(fnscale=-1, maxit=2000))
+#   opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=2000))
+#   if (opt_out$value>bestLL){
+#     bestLL <- opt_out$value
+#     bestthetas <- opt_out$par
+#   }
+#   cat("  LL=",opt_out$value," theta=",opt_out$par,"\n")
+# }
 
 # try random parameters
 # kmin <- rep(0.01,times=(nbvar+1))
@@ -118,20 +137,8 @@ norm_wls <- (wls - mean_wls)/std_wls
 #   matrix(runif(n=(nbtry*(nbvar+1))),nrow=nbtry) * matrix(rep((kmax-kmin),times=nbtry),byrow = T,ncol=(nbvar+1))
 # allLL <- apply(X=ks,MARGIN=1,FUN = logLikelihood, kern=kMat52, Xd=X, F=norm_wls)
 
-# source(file="./cmaes.R")
-# pcma <- list()
-# pcma$xinit <- c(1,rep(1,times=nbvar))
-# pcma$LB <- rep(0.01,times=nbvar+1)
-# pcma$UB <- c(1000,xmax)
-# pcma$budget <- 100000
-# pcma$sigma <- 1
-# opt_out <- cmaes(test_fun=logLikelihood, param=pcma,kern=kMat52, X=X, F=norm_wls)
 
-# opt_out <- optim(c(1,rep(1,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, method = "Nelder-Mead",
-#                  control=list(fnscale=-1, parscale=c(1,xmag)))
-# opt_out <- optim(c(1,rep(20,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, method = "L-BFGS-B",
-#                  control=list(fnscale=-1, parscale=c(1,xmag), maxit=500,factr=1))
-opt_out <- optim(c(1,rep(0.2,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, control=list(fnscale=-1))
+
 # param_opt <- opt_out$par
 
 
