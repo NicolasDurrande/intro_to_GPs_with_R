@@ -19,6 +19,7 @@ source("../labSessions/kernels.R")
 
 ####### input for variables identification ###########
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
+varnames <- c("xs","ys","zs","a","p")
 nbvar <- 5
 # optimum
 xstar <- NA
@@ -78,3 +79,24 @@ rm(Xdata)
 # wls <- wls_ulos(zvar$x)
 
 ######  do a design of experiments #############################
+
+library(lhs)
+nbinit <- 100 # number of points in the initial design of experiments
+set.seed(0)
+# do an optimal Latin Hypercube Sampling
+X <- matrix(rep(xmin,times=nbinit),byrow = T,ncol=nbvar) + 
+  optimumLHS(nbinit, nbvar) * matrix(rep((xmax-xmin),times=nbinit),byrow = T,ncol=nbvar)
+X <- data.frame(X)
+names(X) <- varnames
+wls <- apply(X, 1, wls_ulos)
+# a bit of plotting
+par(mfrow=c(2,3))
+for (i in 1:nbvar){
+  plot(X[,i],log(wls),xlab=names(X)[i])
+}
+# The range of wls is quite large (between 0 and 1e^9), therefore I plot in log scale
+# Observe that a, the source radius, is a sensitive variable. 
+
+###### build a kriging model #######################
+
+
