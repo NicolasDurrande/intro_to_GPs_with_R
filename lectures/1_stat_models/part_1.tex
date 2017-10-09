@@ -174,7 +174,7 @@ In this course we will focus on \textbf{Gaussian Process Regression}.
 \structure{This section is be organised in 3 subsections:}
 \vspace{0.5cm}
 \begin{enumerate}
-    \item Reminders on Multivariate normal distribution
+    \item Univariate and multivariate normal distributions
     \item Gaussian processes
     \item Gaussian process regression
 \end{enumerate}
@@ -184,33 +184,47 @@ In this course we will focus on \textbf{Gaussian Process Regression}.
 %\subsection{Multivariate normal distribution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{1. Multivariate normal distribution}
-The usual one dimensional normal distribution $\mathcal{N}(\mu,\sigma^2)$ has the following pdf:
-\begin{equation*}
-f(x) = \frac{1}{\sigma \sqrt{2 \pi}} \exp \left(-\frac{(x-\mu)^2}{2 \sigma^2} \right) \text{ for } x \in \mathds{R}
-\end{equation*}
-It can be generalised to vectors:
-\begin{definition}
-	We say that a vector $Y=(Y_1, \dots, Y_n)$ follows a multivariate normal distribution if any linear combination of $Y$ follows a normal distribution:
-	\begin{equation*}
-		\forall \alpha \in \mathds{R}^n,\ \alpha^t Y \sim \mathcal{N}(m,s^2)
-	\end{equation*}
-\end{definition}
+\begin{frame}{1D normal distribution}
+We say that $X \sim \mathcal{N}(\mu,\sigma^2)$ if it has the following pdf:
+\begin{columns}
+  \begin{column}{0.6\textwidth}
+  \begin{equation*}
+  f(x) = \frac{1}{\sigma \sqrt{2 \pi}} \exp \left(-\frac{(x-\mu)^2}{2 \sigma^2} \right)
+  \vspace{3mm}
+  \end{equation*}
+  The distribution is characterised by\\
+      \qquad mean: $\mu = \E [X]$\\
+      \qquad variance: $\sigma^2 = \E [X^2] - \E[X]^2$
+  \end{column}
+  \begin{column}{0.5\textwidth}
+  \begin{center}
+   \includegraphics[height=4.7cm]{1_stat_models/figures/R/MVN_dens1} 
+  \end{center}
+  \end{column}
+\end{columns}
+\vspace{2mm}
+\structure{One fundamental property:} a linear combination of independant normal distributed random variables is still normal distributed.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
+\begin{frame}{Multivariate normal distribution}
+\begin{definition}
+	We say that a vector $Y=(Y_1, \dots, Y_d)^t$ follows a multivariate normal distribution if any linear combination of $Y$ follows a normal distribution:
+	\begin{equation*}
+		\forall \alpha \in \mathds{R}^d,\ \alpha^t Y \sim \mathcal{N}
+	\end{equation*}
+\end{definition}
 The distribution of a Gaussian vector is characterised by
 \begin{itemize}
- 	\item a mean vector $\mu = (\mu_1, \dots, \mu_d)$
- 	\item a $d \times d$ covariance matrix $\Sigma$ : $\Sigma_{i,j}=\Cov(Y_i, Y_j)$
+ 	\item a \textbf{mean vector} $\mu = \E [Y]$
+ 	\item a \textbf{covariance matrix} $\Sigma = \E[YY^t] - \E[Y] \E[Y]^t$ % \hfill (i.e. $\Sigma_{i,j}=\Cov(Y_i, Y_j)$)
 \end{itemize}
-\vspace{5mm}
+\vspace{3mm}
 \structure{Property:}\\
 A covariance matrix is
 \begin{itemize}
-	\item \textbf{symmetric} $K_{i,j}=K_{j,i}$
-	\item \textbf{positive semi-definite} $\forall \alpha \in \mathds{R}^d, \alpha^t K \alpha \geq 0$.
+	\item symmetric $K_{i,j}=K_{j,i}$
+	\item positive semi-definite $\forall \alpha \in \mathds{R}^d, \alpha^t K \alpha \geq 0$.
 \end{itemize}
 \end{frame}
 
@@ -221,18 +235,23 @@ The density of a multivariate Gaussian is:
 f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{d/2} |\Sigma|^{1/2}} \exp \left(-\frac12 (x-\mu)^t \Sigma^{-1} (x-\mu)  \right).
 \end{equation*}
 \begin{center}
- \includegraphics[height=4.7cm]{1_stat_models/figures/R/MVN_dens1} \qquad \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_dens2}
+ \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_dens2}
 \end{center}
 \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-\begin{example}
-\begin{center}
+\begin{exampleblock}{Samples from a multivariate normal}
  \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_gaussvec2} \quad \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_gaussvec1}
-\end{center}
-\end{example}
+\end{exampleblock}
+\vspace{-5mm}
+\begin{exampleblock}{Exercise}
+\begin{itemize}
+  \item For $X=(X_1,\dots,X_d)$ with $X_i$ independant and $\mathcal{N}(0,1)$, and a $d \times d$ matrix $A$, what is the distribution of $AX$?
+  \item For a given covariance matrix $K$ and independant $\mathcal{N}(0,1)$ samples, how can we generate $\mathcal{N}(\mu,K)$ random samples?
+\end{itemize}
+\end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,32 +306,6 @@ The conditional distribution of $Y$ knowing $Z$ is still multivariate normal $Y|
 \end{frame}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Exercise}
-	Starting from the density function, prove the previous property using the Schur bloc inverse:
-\begin{equation*}
-\begin{pmatrix}
-	\Sigma_{1,1} & \Sigma_{1,2}\\
-	\Sigma_{2,1} & \Sigma_{2,2}\\
-\end{pmatrix}^{-1} =
-\begin{pmatrix}
-	A & B\\
-	B^t & C\\
-\end{pmatrix}
-\end{equation*}
-\begin{equation*}
-\begin{split}
- \text{where: \quad} A &= (\Sigma_{1,1} - \Sigma_{1,2} \Sigma_{2,2}^{-1} \Sigma_{2,1})^{-1}\\
- B &= -(\Sigma_{1,1} - \Sigma_{1,2} \Sigma_{2,2}^{-1} \Sigma_{2,1})^{-1}\Sigma_{1,2}\Sigma_{2,2}^{-1}\\
- C &= \Sigma_{2,2}^{-1} + \Sigma_{2,2}^{-1} \Sigma_{2,1} (\Sigma_{1,1} -\Sigma_{1,2} \Sigma_{2,2}^{-1} \Sigma_{2,1})^{-1}\Sigma_{1,2}\Sigma_{2,2}^{-1}
-\end{split}
-\end{equation*}
-\end{exampleblock}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection{Gaussian processes}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{2. Gaussian processes}
@@ -347,25 +340,39 @@ Furthermore any symmetric psd function can be seen as the covariance of a Gaussi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-Proving that a function is psd is often intractable. However there are a lot of functions that have already been proven to be psd:\\
+There are a lot of functions that have already been proven psd:\\
 \vspace{2mm}
 \footnotesize
 \begin{tabular}{rlN}
-		constant & $ \displaystyle k(x,y) = 1 $ &\\[4mm]
-		white noise & $ \displaystyle k(x,y) = \delta_{x,y} $ &\\[4mm]
-		Brownian & $ \displaystyle k(x,y) =  \min (x,y) $ &\\[4mm]
-		exponential & $\displaystyle k(x,y) = \exp \left(- |x-y| \right)$ &\\[4mm]
-		Matern 3/2 & $\displaystyle k(x,y) = \left(1 + |x-y| \right) \exp \left(- |x-y| \right)$ &\\[4mm]
-		Matern 5/2 & $\displaystyle k(x,y) = \left(1 + |x-y| + 1/3|x-y|^2 \right) \exp \left(- |x-y| \right)$ &\\[4mm]
-		squared exponential & $\displaystyle k(x,y) = \exp \left(- (x-y)^2 \right)$ &\\[4mm]
+		constant & $ \displaystyle k(x,y) = \sigma^2 $ &\\[4mm]
+		white noise & $ \displaystyle k(x,y) = \sigma^2 \delta_{x,y} $ &\\[4mm]
+		Brownian & $ \displaystyle k(x,y) =  \sigma^2  \min (x,y) $ &\\[4mm]
+		exponential & $\displaystyle k(x,y) =  \sigma^2 \exp \left(- |x-y|/\theta \right)$ &\\[4mm]
+		Matern 3/2 & $\displaystyle k(x,y) =  \sigma^2 \left(1 + |x-y| \right) \exp \left(- |x-y| /\theta\right)$ &\\[4mm]
+		Matern 5/2 & $\displaystyle k(x,y) =  \sigma^2 \left(1 + |x-y| /\theta+ 1/3|x-y|^2 /\theta^2 \right) \exp \left(- |x-y| /\theta\right)$ &\\[4mm]
+		\hspace{-5mm}squared exponential & $\displaystyle k(x,y) =  \sigma^2 \exp \left(- (x-y)^2 /\theta^2 \right)$ &\\[4mm]
 		$\vdots$ &
 		% linear & $ \displaystyle k(x,y) = \sigma^2 xy $ &\\[4mm]
 		% cosine & $ \displaystyle k(x,y) = \sigma^2 \cos \left (\frac{x-y}{\theta} \right) $ &\\[4mm]
 		% sinc & $ \displaystyle k(x,y) = \sigma^2 \frac{\theta}{x-y} \sin \left( \frac{x-y}{\theta} \right) $ &\\[4mm] \hline
 \end{tabular}\\
+%%\begin{tabular}{rlN}
+%%		constant & $ \displaystyle k(x,y) = 1 $ &\\[4mm]
+%%		white noise & $ \displaystyle k(x,y) = \delta_{x,y} $ &\\[4mm]
+%%		Brownian & $ \displaystyle k(x,y) =  \min (x,y) $ &\\[4mm]
+%%		exponential & $\displaystyle k(x,y) = \exp \left(- |x-y| \right)$ &\\[4mm]
+%%		Matern 3/2 & $\displaystyle k(x,y) = \left(1 + |x-y| \right) \exp \left(- |x-y| \right)$ &\\[4mm]
+%%		Matern 5/2 & $\displaystyle k(x,y) = \left(1 + |x-y| + 1/3|x-y|^2 \right) \exp \left(- |x-y| \right)$ &\\[4mm]
+%%		squared exponential & $\displaystyle k(x,y) = \exp \left(- (x-y)^2 \right)$ &\\[4mm]
+%%		$\vdots$ &
+%%		% linear & $ \displaystyle k(x,y) = \sigma^2 xy $ &\\[4mm]
+%%		% cosine & $ \displaystyle k(x,y) = \sigma^2 \cos \left (\frac{x-y}{\theta} \right) $ &\\[4mm]
+%%		% sinc & $ \displaystyle k(x,y) = \sigma^2 \frac{\theta}{x-y} \sin \left( \frac{x-y}{\theta} \right) $ &\\[4mm] \hline
+%%\end{tabular}\\
 \vspace{2mm}
 \normalsize
-When $k$ is a function of $x-y$, the kernel is called \textbf{stationary}.
+When $k$ is a function of $x-y$, the kernel is called \textbf{stationary}. \\
+The parameter $\sigma^2$ is called the \textbf{variance} and $\theta$ the \textbf{length-scale}.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,46 +390,6 @@ Let X be a set 100 regularly spaced points over the input space of $Z$.
 \end{exampleblock}
 \vspace{5mm}
 $\Rightarrow$ Shiny App: \url{https://github.com/NicolasDurrande/shinyApps}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Furthermore, we can include some scaling parameters into the kernels:
-\begin{exampleblock}{Exercise:}
-If $Z$ is a GP $\mathcal{N}(0,k(.,.))$, what is the distribution of $Y(x) = \sigma Z(x/\theta)$ ?
-\end{exampleblock}
-\vspace{5mm}
-$\sigma^2$ is called the \textbf{variance} and $\theta$ the \textbf{length-scale}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Exercise: }
-The kernel is Matern 5/2. Can you put each line in the right order?
-\begin{center}
-\begin{tabular}{ccc}
-$(\sigma^2,\theta) = (3,3)$& $(\sigma^2,\theta)=(1,0.5)$& $(\sigma^2,\theta)=(1,50)$ \\
-&&\\
-\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern105} &\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern33}& \includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern150}\\
-\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj150} &\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj105}& \includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj33}
-\end{tabular}
-\end{center}
-\end{exampleblock}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Exercise: }
-Answer is:
-\begin{center}
-\begin{tabular}{ccc}
-$(\sigma^2,\theta) = (3,3)$& $(\sigma^2,\theta)=(1,0.5)$& $(\sigma^2,\theta)=(1,50)$ \\
-&&\\
-\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern33} &\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern105}& \includegraphics[height=3cm]{1_stat_models/figures/R/MVN_kern150}\\
-\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj33} &\includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj105}& \includegraphics[height=3cm]{1_stat_models/figures/R/MVN_traj150}
-\end{tabular}
-\end{center}
-\end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
