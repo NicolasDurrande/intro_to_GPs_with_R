@@ -16,6 +16,7 @@ library(R.matlab)
 source("./mogi_3D.R")
 source("./wls_ulos.R")
 source("../labSessions/kernels.R")
+source("../labSessions/likelihood.R")
 
 ####### input for variables identification ###########
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
@@ -98,5 +99,39 @@ for (i in 1:nbvar){
 # Observe that a, the source radius, is a sensitive variable. 
 
 ###### build a kriging model #######################
+
+# normalize the output so that it is centered with a unit std dev
+# (wls ranges from 0 to 10^9, might have to do a more radical scaling like log(1+wls))
+mean_wls <- mean(wls)
+std_wls <- sd(wls)
+norm_wls <- (wls - mean_wls)/std_wls
+
+# normalize the input so that all variables are between 0 and 1
+
+# optimize the model parameters
+
+# try random parameters
+# kmin <- rep(0.01,times=(nbvar+1))
+# kmax <- c(100,xmax)
+# nbtry <- 10
+# ks <- matrix(rep(kmin,times=nbtry),byrow = T,ncol=(nbvar+1)) + 
+#   matrix(runif(n=(nbtry*(nbvar+1))),nrow=nbtry) * matrix(rep((kmax-kmin),times=nbtry),byrow = T,ncol=(nbvar+1))
+# allLL <- apply(X=ks,MARGIN=1,FUN = logLikelihood, kern=kMat52, Xd=X, F=norm_wls)
+
+# source(file="./cmaes.R")
+# pcma <- list()
+# pcma$xinit <- c(1,rep(1,times=nbvar))
+# pcma$LB <- rep(0.01,times=nbvar+1)
+# pcma$UB <- c(1000,xmax)
+# pcma$budget <- 100000
+# pcma$sigma <- 1
+# opt_out <- cmaes(test_fun=logLikelihood, param=pcma,kern=kMat52, X=X, F=norm_wls)
+
+# opt_out <- optim(c(1,rep(1,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, method = "Nelder-Mead",
+#                  control=list(fnscale=-1, parscale=c(1,xmag)))
+# opt_out <- optim(c(1,rep(20,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, method = "L-BFGS-B",
+#                  control=list(fnscale=-1, parscale=c(1,xmag), maxit=500,factr=1))
+opt_out <- optim(c(1,rep(0.2,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=X, F=norm_wls, control=list(fnscale=-1))
+# param_opt <- opt_out$par
 
 
