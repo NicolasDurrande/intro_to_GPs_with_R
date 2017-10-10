@@ -31,23 +31,9 @@ In the GPR context, we often have only \textbf{one observation} of the vector $F
 \begin{equation*}
  	L = f_{Z(X)}(F) = \frac{1}{\displaystyle (2 \pi)^{n/2} |k(X,X)|^{1/2}} \exp \left(-\frac12 F^t k(X,X)^{-1} F  \right).
 \end{equation*}
-It is thus possible to maximise $L$ -- or $\log(L)$ -- with respect to the kernel's parameters in order to find a well suited prior.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-	We consider 100 sample from a  Matern 5/2 process with parameters $\sigma^2=1$ and $\theta = 0.2$, and $n$ observation points. We then try to recover the kernel parameters using MLE.\\ \vspace{5mm}
-	\centering
-	\begin{tabular}{|c|cccc|}
-		\hline
-		$n$ & 5 & 10 & 15 & 20 \\ \hline
-		$\sigma^2$ & 1.0 (0.7) & 1.11 (0.71) & 1.03 (0.73) & 0.88 (0.60) \\
-		$\theta$ & 0.20 (0.13) & 0.21 (0.07) & 0.20 (0.04) & 0.19 (0.03) \\ \hline
-	\end{tabular}
-\end{example}
+It is thus possible to maximise $L$ -- or $\log(L)$ -- with respect to the kernel's parameters in order to find a well suited prior.\\
 \vspace{5mm}
-MLE can be applied regardless to the dimension of the input space.
+$\Rightarrow$ R demo
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,20 +131,9 @@ Step 3:\\ \vspace{3mm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-If we apply LOO to previous example we obtain:
- $$MSE = 0.24 \text{ and } Q_2 = 0.34.$$
-Why doesn't the model perform as good as previously?\\
-\vspace{5mm}
-\pause
-It turns out that errors are always computed at the `worst' location!
-\begin{center}
-\includegraphics[height=5cm]{3_gaussian_process_regression/figures/R/VALID_crossval3}
-\end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-We can also look at the residual distribution. For leave-one-out, there is no joint distribution for the residuals so they have to be standardised independently. We obtain:
+We finally obtain:
+ $$MSE = 0.24 \text{ and } Q_2 = 0.34.\vspace{3mm}$$
+We can also look at the residual distribution. For leave-one-out, there is no joint distribution for the residuals so they have to be standardised independently.
 \begin{center}
 \includegraphics[height=5cm]{3_gaussian_process_regression/figures/R/VALID_crossvalhist} \qquad
 \includegraphics[height=5cm]{3_gaussian_process_regression/figures/R/VALID_crossvalqqplot}
@@ -305,94 +280,6 @@ Tensor Additive kernels are very useful for
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Sum of kernels over tensor space}
-We consider the test function $f(x) = \sin( 4 \pi x_1) + \cos( 4 \pi x_2) + 2 x_2$ and a set of 20 observation in $[0,1]^2$. \\ \vspace{5mm}
-\begin{columns}[c]
-\begin{column}{5cm}
-\textbf{Test function}
-\begin{center}
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/newfromold-productvssum2-predt}
-\end{center}
-\end{column}
-\begin{column}{5cm}
-\textbf{Observations}
-\begin{center}
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/newfromold-productvssum2-preddoe}
-\end{center}
-\end{column}
-\end{columns}
-\vspace{5mm}
-\
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Sum of kernels over tensor space}
-We obtain the following models:\\ \vspace{5mm}
-\begin{columns}[c]
-\begin{column}{5cm}
-\textbf{Gaussian kernel}
-\begin{center}
-Mean predictor
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/newfromold-productvssum2-predp}\\
-RMSE is 1.06
-\end{center}
-\end{column}
-\begin{column}{5cm}
-\textbf{Additive Gaussian kernel}
-\begin{center}
-Mean predictor
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/newfromold-productvssum2-preda}\\
-RMSE is 0.12
-\end{center}
-\end{column}
-\end{columns}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Sum of kernels over tensor space}
-\begin{block}{Remark}%[(continuation)]
-\begin{itemize}
-\item It is straightforward to show that the mean predictor is additive
-\begin{equation*}
-\begin{split}
-m(x) & = (k_1(x_1,X_1)+k_2(x_2,X_2)) k(X,X)^{-1} F \\
-& = \underbrace{k_1(x_1,X_1) k(X,X)^{-1} F}_{m_1(x_1)} + \underbrace{k_2(x_2,X_2) k(X,X)^{-1} F}_{m_2(x_2)}
-\end{split}
-\end{equation*}
-\end{itemize}
-\end{block}
-\vspace{5mm}
-\begin{block}{}
-\alert{ $\Rightarrow$ The mean predictor shares the prior behaviour.}
-\end{block}
-\vfill \
-\vspace{2cm} \
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Sum of kernels over tensor space}
-\begin{block}{Remark}%[(continuation)]
-\begin{itemize}
-\item The prediction variance has interesting features
-\begin{columns}[c]
-\begin{column}{5cm}
-\begin{center}
-pred. var. with kernel product
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/kernelmodels-predvarprod}
-\end{center}
-\end{column}
-\begin{column}{5cm}
-\begin{center}
-pred. var. with kernel sum
-\includegraphics[height=4cm]{3_gaussian_process_regression/figures/python/kernelmodels-predvar}
-\end{center}
-\end{column}
-\end{columns}
-\end{itemize}
-\end{block}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Product over the same space}
 \begin{block}{Property}
 \begin{equation*}
@@ -525,6 +412,7 @@ Sample paths
 \end{column}
 \end{columns}
 \end{example}
+$\Rightarrow$ R demo
 \end{frame}
 
 
@@ -538,60 +426,3 @@ There is an equivalence between positive measures and stationnary positive defin
 If the function to approximate has particular properties that can be obtained via a linear transform, it is possible to build a GP with the wanted properties. For example, one can build symmetric GPs or GPs with integral equal to zero.
 \end{itemize}
 \end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Exotic obs.]{Adding ``exotic'' observations}
-\subsection{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Up to now, we have only considered regular observation of the kind $f(X)$. \\ \vspace{5mm}
-According to what we have just seen, the conditioning can also include observation of the integral. This can be generalised to other linear operators such as the derivative:
-$$ Z \ \left| \ Z(X) = F, \int Z = a, \frac{\dx Z}{\dx x}(X')= F' \right. $$
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-	If we take into account that the function is centred, we obtain:
-	\begin{center}
-	\includegraphics[height=6cm]{3_gaussian_process_regression/figures/R/exotic_int}
-	\end{center}
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{example}
-	Whereas if we ignore it:
-	\begin{center}
-	\includegraphics[height=6cm]{3_gaussian_process_regression/figures/R/exotic_pasint}
-	\end{center}
-\end{example}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Similarly, we can include in the model some derivatives observations:
-	\begin{center}
-	\includegraphics[height=6cm]{3_gaussian_process_regression/figures/R/exotic_der}
-	\end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-We can see interesting behaviour if we look at a model with only derivatives.
-	\begin{center}
-	\includegraphics[height=6cm]{3_gaussian_process_regression/figures/R/exotic_deronly}
-	\end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-As always, we can simulate conditional paths:
-	\begin{center}
-	\includegraphics[height=6cm]{3_gaussian_process_regression/figures/R/exotic_simul}
-	\end{center}
-\end{frame}
-

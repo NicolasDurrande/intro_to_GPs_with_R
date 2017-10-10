@@ -398,7 +398,9 @@ In higher dimension one can introduce one length-scale parameter per dimension. 
 \begin{equation*}
 	\Ni{x-y}{\theta} = \left( \sum_{i=1}^d \frac{(x_i-y_i)^2}{\theta_i^2} \right)^{1/2}.
 \end{equation*}
-If the parameters $\theta_i$ are equal for all the dimensions, the covariance (or the process) is called \textbf{isotropic}.
+If the parameters $\theta_i$ are equal for all the dimensions, the covariance (or the process) is called \textbf{isotropic}.\\
+\vspace{5mm}
+$\Rightarrow$ R demo
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -441,39 +443,7 @@ What would be the next step?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-We can look at the conditional distribution of $Z$ knowing that it interpolates the data points:
-\begin{exampleblock}{Exercise}
-\begin{itemize}
-	\item[1.] What is the conditional distribution of $Z(x)|Z(X)=F$?
-	\item[2.] Compute the conditional mean $m$ and covariance $c(.,.)$.
-	\item[3.] Compute $m(X_1)$ and $c(X_1,X_1)$.
-\end{itemize}
-\end{exampleblock}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Solution}
-	\begin{itemize}
-		\item[1.] The conditional distribution is Gaussian.
-		\item[2.] It has mean and variance
-			\begin{equation*}
-			\begin{split}
-				m(x) &= \E[Z(x)|Z(X) \shorteq F] \\
-				&= k(x,X) k(X,X)^{-1} F \\ \vspace{3mm}
-				c(x,y) &= \Cov[Z(x),Z(y)|Z(X) \shorteq F] \\
-				&= k(x,y) - k(x,X) k(X,X)^{-1} k(X,y)
-			\end{split}
-			\end{equation*}
-		\item[3.] We have $m(X_1)=F_1$ and $c(X_1,X_1)=0$
-		\end{itemize}
-\end{exampleblock}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-We can look at sample paths from the conditional distribution
+If we remove all the samples that do not interpolate we obtain:
 \begin{center}
 \includegraphics[height=6cm]{1_stat_models/figures/R/Fig1-sim-cond}
 \end{center}
@@ -489,14 +459,29 @@ It can summarized by a mean function and 95\% confidence intervals.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
+In practice, the conditional distribution can be obtained analyticaly:\\
+\vspace{5mm}
+By definition, $(Z(x),Z(X))$ is multivariate normal so we know the distribution of $Z(x)|Z(X)=F$ is $\mathcal{N}(m(.),c(.,.))$ with:
+\begin{equation*}
+\begin{split}
+    m(x) &= \E[Z(x)|Z(X) \shorteq F] \\
+    &= k(x,X) k(X,X)^{-1} F \\ \vspace{3mm}
+    c(x,y) &= \Cov[Z(x),Z(y)|Z(X) \shorteq F] \\
+    &= k(x,y) - k(x,X) k(X,X)^{-1} k(X,y)
+\end{split}
+\end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
 A few remarkable properties of GPR models
 \begin{itemize}
 	\item They (can) interpolate the data-points
 	\item The prediction variance does not depend on the observations
-	\item The mean predictor does not depend on the variance
+	\item The mean predictor does not depend on the variance parameter
 	\item They (usually) come back to zero when we are far away from the observations.
 \end{itemize}
-Can you prove them?
+Can we prove them?
 \end{frame}
 
 
@@ -537,42 +522,9 @@ The kernel has to be chosen accordingly to our prior belief on the behaviour of 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-The best predictor can be seen either as a linear combination of
-\begin{itemize}
-	\item the observations: $m(x)=\alpha^t F$
-	\item the kernel evaluated at $X$: $m(x)=k(x,X) \beta$
-\end{itemize}
-The later is interesting to understand the model shape and behaviour. \\
-\vspace{5mm}
-For example, we have for a squared exponential kernel
-\begin{center}
-\includegraphics[height=4cm]{1_stat_models/figures/R/ch34_basisfuncGauss}
-\includegraphics[height=4cm]{1_stat_models/figures/R/ch34_GPRbasisfuncGauss}
-\end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-and for a Brownian kernel:
-\begin{center}
-\includegraphics[height=4cm]{1_stat_models/figures/R/ch34_basisfuncBrown}
-\includegraphics[height=4cm]{1_stat_models/figures/R/ch34_GPRbasisfuncBrown}
-\end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
 We are not always interested in models that interpolate the data. For example, if there is some observation noise: $F = f(X) + \varepsilon$.
-% \begin{equation*}
-% 	F = f(X) + \varepsilon
-% \end{equation*}
-% What would change in the model expression?
-% \end{frame}
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \begin{frame}{}
 \vspace{5mm}
-Let $N$ be a process $\mathcal{N}(0,n)$ that represent the observation noise. The expressions of GPR with noise are
+Let $N$ be a process $\mathcal{N}(0,n(.,.))$ that represent the observation noise. The expressions of GPR with noise are
 \begin{equation*}
 	\begin{split}
 	m(x) &= \E[Z(x)|Z(X) + N(X) \shorteq F] \\
@@ -593,5 +545,6 @@ Examples of models with observation noise for $n(x,y)=\tau^2 \delta_{x,y}$:
 \includegraphics[height=3.5cm]{1_stat_models/figures/R/ch34_GPRnoise01}\\
 The values of $\tau^2$ are respectively 0.001, 0.01 and 0.1.
 \end{center}
+$\Rightarrow$ R demo
 \end{frame}
 
