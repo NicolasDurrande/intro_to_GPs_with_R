@@ -17,6 +17,9 @@ source("./mogi_3D.R")
 source("./wls_ulos.R")
 source("../labSessions/kernels.R")
 source("../labSessions/likelihood.R")
+source("../labSessions/models.R")
+source("../labSessions/plots.R")
+
 
 ####### input for variables identification ###########
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
@@ -91,43 +94,89 @@ X <- matrix(rep(xmin,times=nbinit),byrow = T,ncol=nbvar) +
 X <- data.frame(X)
 names(X) <- varnames
 wls <- apply(X, 1, wls_ulos)
-# a bit of plotting
-par(mfrow=c(2,3))
-for (i in 1:nbvar){
-  plot(X[,i],log(wls),xlab=names(X)[i])
-}
-# The range of wls is quite large (between 0 and 1e^9), therefore I plot in log scale
-# Observe that a, the source radius, is a sensitive variable. 
-
-###### build a kriging model #######################
-
 # normalize the output so that it is centered with a unit std dev
 # (wls ranges from 0 to 10^9, might have to do a more radical scaling like log(1+wls))
 mean_wls <- mean(wls)
 std_wls <- sd(wls)
 norm_wls <- (wls - mean_wls)/std_wls
 
-# normalize the input so that all variables are between 0 and 1
+# plot learning data
+par(mfrow=c(2,3))
+for (i in 1:nbvar){
+  plot(X[,i],log(wls),xlab=names(X)[i])
+}
+# empty plot + text
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
+
+# Comments:
+# * The range of wls is quite large (between 0 and 1e^9), therefore I plot in log scale
+# * a, the source radius, is a sensitive variable, 
+#   and large zs seem correlated to large wls error. 
+
+###### build a kriging model #######################
 
 # optimize the model parameters by repeating local searches started from random initial points
 tmin <- rep(0.0001,times=nbvar+1)
 tmax <- c(10,rep(10,times=nbvar))
-nbtry <- 100
+nbtry <- 50
 bestLL <- -Inf
+cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
 for (i in 1:nbtry){
   tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
-  cat(i,"theta_init=",tinit)
+  LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
+  cat(i,"theta_init=",tinit," , LL=",LL,"\n")
   opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
   if (opt_out$value>bestLL){
     bestLL <- opt_out$value
-    bestthetas <- opt_out$par
+    bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
   }
-  cat("  LL=",opt_out$value," theta=",opt_out$par,"\n")
+  cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
 }
+cat("\n final thetas=",bestthetas," , final LL=",bestLL,"\n")
 # Past results 
-# thetas <- c(12.4984507,35.1580994,33.3080571,0.0705240,0.7633325,34.9875985) # LL=-110.4204
+# bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
 # i.e., only zs and a are sensitive variables
 
-# param_opt <- opt_out$par
+# make a test set
+ntest <- 110
+Xtestnorm <- matrix(runif(ntest*nbvar),nrow=ntest)
+Xtest <- matrix(rep(xmin,times=ntest),byrow = T,ncol=nbvar) + 
+  Xtestnorm * matrix(rep((xmax-xmin),times=ntest),byrow = T,ncol=nbvar)
+Xtest <- data.frame(Xtest)
+names(Xtest) <- varnames
+wls_test <- apply(Xtest, 1, wls_ulos)
+wls_testnorm <- (wls_test - mean_wls)/std_wls
+
+# plot the test set
+par(mfrow=c(2,3))
+for (i in 1:nbvar){
+  plot(Xtest[,i],log(wls_test),xlab=names(Xtest)[i])
+}
+# empty plot + text
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+text(x = 0.5, y = 0.5, paste("TEST\n","SET"), cex = 1.6, col = "black")
 
 # test the model
+pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=bestthetas)
+
+par(mfrow=c(1,3))
+# scatter plot
+eps <- 0.2
+limmin <- min(c(wls_testnorm,pred$mean))-eps
+limmax <- max(c(wls_testnorm,pred$mean))+eps
+par(pty="s")
+plot(wls_testnorm, pred$mean, xlim=c(limmin,limmax), ylim=c(limmin,limmax), asp=1)
+lines(c(limmin,limmax),c(limmin,limmax))
+# residuals
+plot(x=1:length(wls_testnorm),y=(pred$mean-wls_testnorm),xlab="test points no.")
+# pred +/- std dev
+plot(x=1:length(pred$mean),y=pred$mean,xlab="test points no.",ylab = "WLS",pch=3)
+sdtest <- sqrt(diag(pred$cov))
+points(x=1:length(pred$mean),y=(pred$mean-sdtest),pch="-")
+points(x=1:length(pred$mean),y=(pred$mean+sdtest),pch="-")
+points(x=1:length(wls_testnorm),y=wls_testnorm,pch=1,col="blue")
+legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("blue","black"))
+
+
+
