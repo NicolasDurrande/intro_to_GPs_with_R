@@ -167,7 +167,7 @@ kMat32 <- function(x,y,param=NULL){
 kMat52 <- function(x,y,param=NULL){
   if(is.null(param)) param <- c(1,rep(.2,ncol(x)))
   d <- sqrt(5)*dist(x,y,param[-1])
-  return(param[1]*(1 + d +1/3*d^2)*exp(-d))
+  return(abs(param[1])*(1 + d +1/3*d^2)*exp(-d)) # rodo adds abs to avoid negative param[1] during max LL
 }
 
 #' White noise kernel 
