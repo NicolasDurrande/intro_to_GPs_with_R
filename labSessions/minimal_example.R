@@ -23,5 +23,5 @@ pred <- predGPR(x, X, F, kMat52, param_opt)
 plotGPR(x,pred)
 
 # Compute the expected improvement
-ei <- EI(x, X, F, kMat52, param_opt)
+ei <- EI(xp=x, Xd=X, F, kMat52, param_opt)
 plot(x, ei, type='l', main="Expected Improvement", col=darkRed)
