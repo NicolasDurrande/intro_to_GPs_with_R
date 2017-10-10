@@ -109,36 +109,25 @@ norm_wls <- (wls - mean_wls)/std_wls
 
 # normalize the input so that all variables are between 0 and 1
 
-# # optimize the model parameters by repeating local searches started from random initial points
-# tmin <- rep(0.0001,times=nbvar+1)
-# tmax <- c(100,rep(1000,times=nbvar))
-# nbtry <- 100
-# bestLL <- -Inf
-# for (i in 1:nbtry){
-#   tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
-#   cat(i,"theta_init=",tinit)
-#   # opt_out <- optim(c(1,rep(1,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, method = "Nelder-Mead",
-#   #                  control=list(fnscale=-1,maxit=2000))
-#   # opt_out <- optim(c(1,rep(800,times=nbvar)), fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, method = "L-BFGS-B", 
-#   #                  control=list(fnscale=-1, maxit=2000))
-#   opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=2000))
-#   if (opt_out$value>bestLL){
-#     bestLL <- opt_out$value
-#     bestthetas <- opt_out$par
-#   }
-#   cat("  LL=",opt_out$value," theta=",opt_out$par,"\n")
-# }
-
-# try random parameters
-# kmin <- rep(0.01,times=(nbvar+1))
-# kmax <- c(100,xmax)
-# nbtry <- 10
-# ks <- matrix(rep(kmin,times=nbtry),byrow = T,ncol=(nbvar+1)) + 
-#   matrix(runif(n=(nbtry*(nbvar+1))),nrow=nbtry) * matrix(rep((kmax-kmin),times=nbtry),byrow = T,ncol=(nbvar+1))
-# allLL <- apply(X=ks,MARGIN=1,FUN = logLikelihood, kern=kMat52, Xd=X, F=norm_wls)
-
-
+# optimize the model parameters by repeating local searches started from random initial points
+tmin <- rep(0.0001,times=nbvar+1)
+tmax <- c(10,rep(10,times=nbvar))
+nbtry <- 100
+bestLL <- -Inf
+for (i in 1:nbtry){
+  tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
+  cat(i,"theta_init=",tinit)
+  opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
+  if (opt_out$value>bestLL){
+    bestLL <- opt_out$value
+    bestthetas <- opt_out$par
+  }
+  cat("  LL=",opt_out$value," theta=",opt_out$par,"\n")
+}
+# Past results 
+# thetas <- c(12.4984507,35.1580994,33.3080571,0.0705240,0.7633325,34.9875985) # LL=-110.4204
+# i.e., only zs and a are sensitive variables
 
 # param_opt <- opt_out$par
 
-
+# test the model

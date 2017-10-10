@@ -33,7 +33,15 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
     stop("the (log-)likelihood is only implemented for kernNoise=NULL and kernNoise=kWhite")    
   }
   ndata <- nrow(Xd)
-  # rodo add e-12 on the diagonal to avoid singularity
-  LL <- -1/2*ndata*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX+1.e-8*diag(ndata))%*%F
+  # rodo add something on the diagonal to avoid singularity
+  detkXX <- det(kXX)
+  eps <- 1.e-14
+  tau <- 1.e-14
+  while (detkXX<eps & tau<1) {
+    tau <- tau*100
+    kXX <- kXX + tau*diag(ndata)
+    detkXX <- det(kXX)
+  }
+  LL <- -1/2*ndata*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX)%*%F
   return(LL)
 }
