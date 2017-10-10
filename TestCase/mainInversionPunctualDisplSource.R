@@ -25,6 +25,7 @@ source("../labSessions/plots.R")
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
 varnames <- c("xs","ys","zs","a","p")
 nbvar <- 5
+
 # optimum
 xstar <- NA
 xstar[n2i$xs] <- 367000 # X location of source in UTM coordinates
@@ -32,6 +33,7 @@ xstar[n2i$ys] <- 7650300 # Y location of source in UTM
 xstar[n2i$zs] <- 0 # Elevation of source with respect to sea level
 xstar[n2i$a] <- 500 # source radius
 xstar[n2i$p] <- 20 # Source overpressure in MPa
+
 # order of magnitude of the variables 
 # (different from 0, to be used when scaling, setting bounds...)
 xmag <- NA
@@ -40,8 +42,7 @@ xmag[n2i$ys] <- 7650300 # Y location of source in UTM
 xmag[n2i$zs] <- 1000 # Elevation of source with respect to sea level
 xmag[n2i$a] <- 500 # source radius
 xmag[n2i$p] <- 100 # Source overpressure in MPa
-# initial point (for an identification)
-xinit<-xstar+c(0.2,-0.2,-0.3,0.5,-0.4)*xmag
+
 # bounds on variables
 xmax <- NA
 xmin <- NA
@@ -55,12 +56,11 @@ xmin[n2i$a]<- 50
 xmax[n2i$a]<- 1000
 xmin[n2i$p]<- -500
 xmax[n2i$p]<-500
-#
-
 
 Glb_var <<- list(n2i=n2i,nbvar=nbvar,xmag=xmag,xmax=xmax,xmin=xmin) # always useful stuff
 
 ####### load data ###########
+
 data <- readMat('data_nonoise.mat') # TODO: do a read from cvs version (rodo)
 Glb_xi <<- as.matrix(data$locdata[,1])
 Glb_yi <<- as.matrix(data$locdata[,2])
@@ -71,16 +71,13 @@ Glb_ulos <<- as.matrix(data$locdata[,4])
 # covariance from exponential kernel, var = 5e-4m2, cor_length = 850 m
 # and invert it
 Xdata <- data$locdata[,1:2] # z's are not accounted for in Xdata
-Glb_CXinv <<- solve(kExp(Xdata,Xdata,c(5e-4,850,850))) 
+Glb_CXinv <<- solve(kExp(Xdata,Xdata,c(5e-4,850,850))) # calculated once for all, used in wls_ulos
 # # has been compared to the matlab covariance matrix below, max difference 1e-6
 # data <- readMat('cov_nonoise.mat')
 # CovData <- data$Cd
 rm(data)
 rm(Xdata)
 
-# a sample call to the distance function would look like this:
-# zvar <- list(n2i=n2i, x=xinit)
-# wls <- wls_ulos(zvar$x)
 
 ######  do a design of experiments #############################
 
@@ -93,16 +90,20 @@ X <- matrix(rep(xmin,times=nbinit),byrow = T,ncol=nbvar) +
   Xnorm * matrix(rep((xmax-xmin),times=nbinit),byrow = T,ncol=nbvar)
 X <- data.frame(X)
 names(X) <- varnames
+pairs(X) # look at it
+
+# calculate weighted least squares at X of U projected on LOS (w.r.t. target Glb_ulos)
 wls <- apply(X, 1, wls_ulos)
 # normalize the output so that it is centered with a unit std dev
-# (wls ranges from 0 to 10^9, might have to do a more radical scaling like log(1+wls))
-# mean_wls <- mean(wls)
-# std_wls <- sd(wls)
-# norm_wls <- (wls - mean_wls)/std_wls
+# because wls ranges from 0 to 10^9, do a scaling in log(1+wls)
 lwls <- log(1+wls)
 mean_wls <- mean(lwls)
 std_wls <- sd(lwls)
 norm_wls <- (lwls - mean_wls)/std_wls
+# # old linear scaling
+# mean_wls <- mean(wls)
+# std_wls <- sd(wls)
+# norm_wls <- (wls - mean_wls)/std_wls
 
 # plot learning data
 par(mfrow=c(2,3))
@@ -115,9 +116,8 @@ plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 
 # Comments:
-# * The range of wls is quite large (between 0 and 1e^9), therefore I plot in log scale
 # * a, the source radius, is a sensitive variable, 
-#   and large zs seem correlated to large wls error. 
+# * large zs seem correlated to large wls error. 
 
 ###### build a kriging model #######################
 
@@ -143,6 +143,7 @@ cat("\n final thetas=",bestthetas," , final LL=",bestLL,"\n")
 # bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
 # i.e., only zs and a are sensitive variables
 # with log(1+wls)
+# bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
 # final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596 
 
 # make a test set
@@ -154,8 +155,8 @@ Xtest <- data.frame(Xtest)
 names(Xtest) <- varnames
 wls_test <- apply(Xtest, 1, wls_ulos)
 lwls_test <- log(1+wls_test)
-# wls_testnorm <- (wls_test - mean_wls)/std_wls
 wls_testnorm <- (lwls_test - mean_wls)/std_wls
+# wls_testnorm <- (wls_test - mean_wls)/std_wls # linear scaling version
 
 # test the model
 pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=bestthetas)
@@ -190,7 +191,11 @@ points(x=1:length(pred$mean),y=(pred$mean-sdtest),pch="-")
 points(x=1:length(pred$mean),y=(pred$mean+sdtest),pch="-")
 points(x=1:length(wls_testnorm),y=wls_testnorm,pch=1,col="blue")
 legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("blue","black"))
+# TODO: other plot result with normal distribution?
 
 # Comments : 
-#   the normalization log(1+wls) helps a lot for kriging
+#   the normalization log(1+wls) helps a lot the kriging model
+
+######### model identification through optimization ########
+#         = EGO algorithm 
 
