@@ -96,15 +96,20 @@ names(X) <- varnames
 wls <- apply(X, 1, wls_ulos)
 # normalize the output so that it is centered with a unit std dev
 # (wls ranges from 0 to 10^9, might have to do a more radical scaling like log(1+wls))
-mean_wls <- mean(wls)
-std_wls <- sd(wls)
-norm_wls <- (wls - mean_wls)/std_wls
+# mean_wls <- mean(wls)
+# std_wls <- sd(wls)
+# norm_wls <- (wls - mean_wls)/std_wls
+lwls <- log(1+wls)
+mean_wls <- mean(lwls)
+std_wls <- sd(lwls)
+norm_wls <- (lwls - mean_wls)/std_wls
 
 # plot learning data
 par(mfrow=c(2,3))
 for (i in 1:nbvar){
-  plot(X[,i],log(wls),xlab=names(X)[i])
-}
+  plot(X[,i],norm_wls,xlab=names(X)[i])
+  # plot(X[,i],log(wls),xlab=names(X)[i])
+  }
 # empty plot + text
 plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
@@ -117,7 +122,7 @@ text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 ###### build a kriging model #######################
 
 # optimize the model parameters by repeating local searches started from random initial points
-tmin <- rep(0.0001,times=nbvar+1)
+tmin <- rep(0.1,times=nbvar+1)
 tmax <- c(10,rep(10,times=nbvar))
 nbtry <- 50
 bestLL <- -Inf
@@ -134,9 +139,11 @@ for (i in 1:nbtry){
   cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
 }
 cat("\n final thetas=",bestthetas," , final LL=",bestLL,"\n")
-# Past results 
+# Past results with non-logged outputs
 # bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
 # i.e., only zs and a are sensitive variables
+# with log(1+wls)
+# final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596 
 
 # make a test set
 ntest <- 110
@@ -146,7 +153,15 @@ Xtest <- matrix(rep(xmin,times=ntest),byrow = T,ncol=nbvar) +
 Xtest <- data.frame(Xtest)
 names(Xtest) <- varnames
 wls_test <- apply(Xtest, 1, wls_ulos)
-wls_testnorm <- (wls_test - mean_wls)/std_wls
+lwls_test <- log(1+wls_test)
+# wls_testnorm <- (wls_test - mean_wls)/std_wls
+wls_testnorm <- (lwls_test - mean_wls)/std_wls
+
+# test the model
+pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=bestthetas)
+# calculate RMSE and Q2
+rmse <- sqrt(mean((wls_testnorm-pred$mean)^2))
+q2 <- 1 - sum((wls_testnorm-pred$mean)^2)/sum((wls_testnorm-mean(wls_testnorm))^2)
 
 # plot the test set
 par(mfrow=c(2,3))
@@ -155,10 +170,8 @@ for (i in 1:nbvar){
 }
 # empty plot + text
 plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-text(x = 0.5, y = 0.5, paste("TEST\n","SET"), cex = 1.6, col = "black")
-
-# test the model
-pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=bestthetas)
+text(x = 0.5, y = 0.5, paste("TEST SET\n","RMSE=",format(rmse,digits=4),
+                             "\n Q2=",format(q2,digits =4), sep=""), cex = 1.2, col = "black")
 
 par(mfrow=c(1,3))
 # scatter plot
@@ -178,5 +191,6 @@ points(x=1:length(pred$mean),y=(pred$mean+sdtest),pch="-")
 points(x=1:length(wls_testnorm),y=wls_testnorm,pch=1,col="blue")
 legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("blue","black"))
 
-
+# Comments : 
+#   the normalization log(1+wls) helps a lot for kriging
 
