@@ -125,27 +125,32 @@ text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 # optimize the model parameters by repeating local searches started from random initial points
 tmin <- rep(0.1,times=nbvar+1)
 tmax <- c(10,rep(10,times=nbvar))
-nbtry <- 50
+nbtry <- 0 # make it <1 to skip max LL and take a past, a priori theta
 bestLL <- -Inf
-cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
-for (i in 1:nbtry){
-  tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
-  LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
-  cat(i,"theta_init=",tinit," , LL=",LL,"\n")
-  opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
-  if (opt_out$value>bestLL){
-    bestLL <- opt_out$value
-    bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+if (nbtry<1){
+  # Past results with non-logged outputs
+  # bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
+  # i.e., only zs and a are sensitive variables
+  # with log(1+wls)
+  bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
+  # final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596   
+  bestLL <- logLikelihood(params = bestthetas,kern=kMat52,Xd=Xnorm,F=norm_wls)
+} else {
+  cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
+  for (i in 1:nbtry){
+    tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
+    LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
+    cat(i,"theta_init=",tinit," , LL=",LL,"\n")
+    opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
+    if (opt_out$value>bestLL){
+      bestLL <- opt_out$value
+      bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+    }
+    cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
   }
-  cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
+
 }
 cat("\n final thetas=",bestthetas," , final LL=",bestLL,"\n")
-# Past results with non-logged outputs
-# bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
-# i.e., only zs and a are sensitive variables
-# with log(1+wls)
-# bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
-# final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596 
 
 # make a test set
 ntest <- 110
@@ -200,3 +205,24 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 ######### model identification through optimization ########
 #         = EGO algorithm 
 
+EGOmaxiter <- 50
+for (iter in 1:EGOmaxiter){
+
+  # optimise EI
+  nbtry <- 100
+  bestEI <- -Inf
+  cat("\n  MAX EI in ",nbtry," restarts of local optimization\n\n")
+  for (i in 1:nbtry){
+    xinitnorm <- runif(nbvar)
+    aEI <- EI(xp=xinitnorm,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas)
+    cat(i,"norm.xinit=",xinitnorm," , EI=",aEI,"\n")
+    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas, control=list(fnscale=-1, maxit=100))
+    if (opt_out$value>bestEI){
+      bestEI <- opt_out$value
+      bestvar <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+    }
+    cat(" iter var=",opt_out$par," , iter EI=",opt_out$value,"\n")
+  }
+  cat("\n final thetas=",bestvar," , final EI=",bestEI,"\n")
+  
+} # end EGO loop
