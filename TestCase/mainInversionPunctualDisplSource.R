@@ -87,8 +87,18 @@ nbinit <- 100 # number of points in the initial design of experiments
 set.seed(0)
 # do an optimal Latin Hypercube Sampling
 Xnorm <- optimumLHS(nbinit, nbvar)
-X <- matrix(rep(xmin,times=nbinit),byrow = T,ncol=nbvar) + 
-  Xnorm * matrix(rep((xmax-xmin),times=nbinit),byrow = T,ncol=nbvar)
+# a function to denormalize variables
+# Xnorm should either be a (n times nbvar) matrix or a numeric vector 
+unnorm_var <- function(Xnorm){
+  if (is.null(dim(Xnorm))) {Xn <- matrix(data = Xnorm, ncol = nbvar, byrow = T)} # numeric vector
+  else {Xn <- Xnorm}
+  nbrep <- dim(Xn)[1]
+  Xu <- matrix(rep(xmin,times=nbrep),byrow = T,ncol=nbvar) + 
+    Xn * matrix(rep((xmax-xmin),times=nbrep),byrow = T,ncol=nbvar)  
+  return(Xu)
+}
+#
+X <- unnorm_var(Xnorm=Xnorm)
 X <- data.frame(X)
 names(X) <- varnames
 pairs(X) # look at it
@@ -141,6 +151,8 @@ if (nbtry<1){
     tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
     LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
     cat(i,"theta_init=",tinit," , LL=",LL,"\n")
+    # although there are bounds on the parameters (length scales and variance are >0), no need to enforce them
+    # because logLikelihood is not sensitive to the sign of them and this allows more optimizers to be used
     opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
     if (opt_out$value>bestLL){
       bestLL <- opt_out$value
@@ -208,21 +220,28 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 EGOmaxiter <- 50
 for (iter in 1:EGOmaxiter){
 
+  cat("***** EGO iteration ",iter,"\n\n")
   # optimise EI
   nbtry <- 100
   bestEI <- -Inf
   cat("\n  MAX EI in ",nbtry," restarts of local optimization\n\n")
+  # it is important to restart this optimization as most of the time EI is too flat to allow a 
+  # gradient based search to proceed. An alternative is to use the CMA-ES algorithm (TODO)
   for (i in 1:nbtry){
     xinitnorm <- runif(nbvar)
     aEI <- EI(xp=xinitnorm,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas)
     cat(i,"norm.xinit=",xinitnorm," , EI=",aEI,"\n")
-    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas, control=list(fnscale=-1, maxit=100))
+    # in the optimization, it is important to remain in bounds, i.e., between 0 and 1 with the normalized variables
+    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas, 
+                     method="L-BFGS-B", lower=rep(0,nbvar), upper=rep(1,nbvar), control=list(fnscale=-1, maxit=100))
     if (opt_out$value>bestEI){
       bestEI <- opt_out$value
       bestvar <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
     }
     cat(" iter var=",opt_out$par," , iter EI=",opt_out$value,"\n")
   }
-  cat("\n final thetas=",bestvar," , final EI=",bestEI,"\n")
+  cat("\n final var=",bestvar," , final EI=",bestEI,"\n"," (unnormed var=",unnorm_var(bestvar),") \n")
+  
+  # update the kriging model
   
 } # end EGO loop

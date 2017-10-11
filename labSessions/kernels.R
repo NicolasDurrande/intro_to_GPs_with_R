@@ -1,3 +1,4 @@
+# rodo : adds abs() around variance parameters to allow for max LL without bounds on parameters
 
 ##########################################
 ##########################################
@@ -54,7 +55,7 @@ dist <- function(x,y,theta=NULL){
 kBrown <- function(x,y,param=1){
   if(ncol(x)!=1 | ncol(y)!=1 ) stop("this kernel is only defined for 1-dimensional inputs: 
                       x and y must be matrices with 1 column (or simply vectors)")
-  param*outer(c(x),c(y),"pmin")
+  abs(param)*outer(c(x),c(y),"pmin")
 }
 
 
@@ -77,7 +78,7 @@ kCos <- function(x,y,param=NULL){
   if(ncol(x)!=1) stop("this kernel is only defined for 1-dimensional inputs: 
                       x and y must be matrices with 1 column")
   if(is.null(param)) param <- c(1,2*pi)
-  param[1]*cos(outer(c(x),c(y),'-')/param[2]*2*pi)
+  abs(param[1])*cos(outer(c(x),c(y),'-')/abs(param[2])*2*pi)
 }
 
 
@@ -104,7 +105,7 @@ kCos <- function(x,y,param=NULL){
 #' @export
 kExp <- function(x,y,param=NULL){
   if(is.null(param)) param <- c(1,rep(.2,ncol(x)))
-  param[1]*exp(-dist(x,y,param[-1]))
+  abs(param[1])*exp(-dist(x,y,param[-1]))
 }
 
 
@@ -125,7 +126,7 @@ kExp <- function(x,y,param=NULL){
 #' @export
 kGauss <- function(x,y,param=NULL){
   if(is.null(param)) param <- c(1,rep(.2,ncol(x)))
-  param[1]*exp(-.5*dist(x,y,param[-1])^2)
+  abs(param[1])*exp(-.5*dist(x,y,param[-1])^2)
 }
 
 #' Matern 3/2 kernel 
@@ -146,7 +147,7 @@ kGauss <- function(x,y,param=NULL){
 kMat32 <- function(x,y,param=NULL){
   if(is.null(param)) param <- c(1,rep(.2,ncol(x)))
   d <- sqrt(3)*dist(x,y,param[-1])
-  return(param[1]*(1 + d)*exp(-d))
+  return(abs(param[1])*(1 + d)*exp(-d))
 }
 
 #' Matern 5/2 kernel 
@@ -167,7 +168,7 @@ kMat32 <- function(x,y,param=NULL){
 kMat52 <- function(x,y,param=NULL){
   if(is.null(param)) param <- c(1,rep(.2,ncol(x)))
   d <- sqrt(5)*dist(x,y,param[-1])
-  return(abs(param[1])*(1 + d +1/3*d^2)*exp(-d)) # rodo adds abs to avoid negative param[1] during max LL
+  return(abs(param[1])*(1 + d +1/3*d^2)*exp(-d)) 
 }
 
 #' White noise kernel 
@@ -188,5 +189,5 @@ kMat52 <- function(x,y,param=NULL){
 kWhite <- function(x,y,param=NULL){
   if(is.null(param)) param <- 1
   d <- dist(x,y,rep(1,dim(x)[2]))
-  return(param*(d==0))
+  return(abs(param)*(d==0))
 }
