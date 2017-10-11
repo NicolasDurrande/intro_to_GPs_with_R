@@ -95,26 +95,29 @@ unnorm_var <- function(Xnorm){
   nbrep <- dim(Xn)[1]
   Xu <- matrix(rep(xmin,times=nbrep),byrow = T,ncol=nbvar) + 
     Xn * matrix(rep((xmax-xmin),times=nbrep),byrow = T,ncol=nbvar)  
+  Xu <- data.frame(Xu)
+  names(Xu) <- varnames
   return(Xu)
 }
 #
 X <- unnorm_var(Xnorm=Xnorm)
-X <- data.frame(X)
-names(X) <- varnames
 pairs(X) # look at it
 
 # calculate weighted least squares at X of U projected on LOS (w.r.t. target Glb_ulos)
 wls <- apply(X, 1, wls_ulos)
+
 # normalize the output so that it is centered with a unit std dev
 # because wls ranges from 0 to 10^9, do a scaling in log(1+wls)
 lwls <- log(1+wls)
 mean_wls <- mean(lwls)
 std_wls <- sd(lwls)
-norm_wls <- (lwls - mean_wls)/std_wls
-# # old linear scaling
-# mean_wls <- mean(wls)
-# std_wls <- sd(wls)
-# norm_wls <- (wls - mean_wls)/std_wls
+# wls normalization as a function as it is used at different locations in the code
+normalizeWLS <- function(awls){
+  lawls <- log(1+awls)
+  return((lawls - mean_wls)/std_wls)
+}
+#
+norm_wls <- normalizeWLS(wls)
 
 # plot learning data
 par(mfrow=c(2,3))
@@ -137,13 +140,13 @@ text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 nbtry <- 0 # make it <1 to skip max LL and take a past, a priori theta
 if (nbtry<1){
   # Past results with non-logged outputs
-  # bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
+  # oLL$bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
   # i.e., only zs and a are sensitive variables
   # with log(1+wls)
   oLL <- list()
   oLL$bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
   # final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596   
-  oLL$bestLL <- logLikelihood(params = bestthetas,kern=kMat52,Xd=Xnorm,F=norm_wls)
+  oLL$bestLL <- logLikelihood(params = oLL$bestthetas,kern=kMat52,Xd=Xnorm,F=norm_wls)
 } else {
   oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,nbtry=nbtry,maxit=500,silent=F)
 }
@@ -162,7 +165,7 @@ wls_testnorm <- (lwls_test - mean_wls)/std_wls
 # wls_testnorm <- (wls_test - mean_wls)/std_wls # linear scaling version
 
 # test the model
-pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=bestthetas)
+pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=oLL$bestthetas)
 # calculate RMSE and Q2
 rmse <- sqrt(mean((wls_testnorm-pred$mean)^2))
 q2 <- 1 - sum((wls_testnorm-pred$mean)^2)/sum((wls_testnorm-mean(wls_testnorm))^2)
@@ -202,10 +205,11 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 ######### model identification through optimization ########
 #         = EGO algorithm 
 
-EGOmaxiter <- 50
+EGOmaxiter <- 10
+period_upd <- 10
 for (iter in 1:EGOmaxiter){
 
-  cat("***** EGO iteration ",iter,"\n\n")
+  cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
   nbtry <- 100
   bestEI <- -Inf
@@ -214,10 +218,10 @@ for (iter in 1:EGOmaxiter){
   # gradient based search to proceed. An alternative is to use the CMA-ES algorithm (TODO)
   for (i in 1:nbtry){
     xinitnorm <- runif(nbvar)
-    aEI <- EI(xp=xinitnorm,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas)
+    aEI <- EI(xp=xinitnorm,Xd=Xnorm,F=norm_wls,kern=kMat52,param=oLL$bestthetas)
     cat(i,"norm.xinit=",xinitnorm," , EI=",aEI,"\n")
     # in the optimization, it is important to remain in bounds, i.e., between 0 and 1 with the normalized variables
-    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=bestthetas, 
+    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=oLL$bestthetas, 
                      method="L-BFGS-B", lower=rep(0,nbvar), upper=rep(1,nbvar), control=list(fnscale=-1, maxit=100))
     if (opt_out$value>bestEI){
       bestEI <- opt_out$value
@@ -225,8 +229,29 @@ for (iter in 1:EGOmaxiter){
     }
     cat(" iter var=",opt_out$par," , iter EI=",opt_out$value,"\n")
   }
-  cat("\n final var=",bestvar," , final EI=",bestEI,"\n"," (unnormed var=",unnorm_var(bestvar),") \n")
   
-  # update the kriging model
+  # calculate function at new point
+  newX <- unnorm_var(Xnorm = bestvar)
+  newwls <- wls_ulos(as.numeric(newX))  
+  newwls_norm <- normalizeWLS(newwls)
+  # update data bases
+  X <- rbind(X,newX)
+  Xnorm <- rbind(Xnorm,matrix(bestvar,ncol=nbvar,byrow = T))
+  wls <- c(wls,newwls)
+  norm_wls <- c(norm_wls,newwls_norm)
+
+  # some printing and user control
+  cat("\n Iteration ",iter," summary:\n")
+  cat("   EI best var=",bestvar," , has EI=",bestEI,"\n")
+  cat("   unnormed var= ")
+  for (ii in 1:nbvar) {cat(as.numeric(newX[ii]),varnames[ii],"  ")}
+  cat(" , wls = ",newwls,"  (norm.wls=",newwls_norm,")\n")
+  user.stop <- readline(prompt="Enter x to exit, anything else otherwise ")
+  if (user.stop=="x") break
+  
+  # # update the kriging model every period_upd
+  # if (iter%%period_upd==0) {
+  #   oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,nbtry=nbtry,maxit=500,silent=F)
+  # }
   
 } # end EGO loop
