@@ -19,6 +19,7 @@ source("../labSessions/kernels.R")
 source("../labSessions/likelihood.R")
 source("../labSessions/models.R")
 source("../labSessions/plots.R")
+source("../labSessions/EI.R")
 
 
 ####### input for variables identification ###########

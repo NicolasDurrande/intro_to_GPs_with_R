@@ -23,7 +23,8 @@ EI <- function(xp,Xd,F,kern,param=NULL,kernNoise=kWhite,paramNoise=0){
   kxX <- kern(xp,Xd,param)
   kXX_1 <- solve(kern(Xd,Xd,param) + kernNoise(Xd,Xd,paramNoise))
   m <- kxX %*% kXX_1 %*% F
-  var <- rep(kern(xp[1,,drop=FALSE],xp[1,,drop=FALSE],param) - rowSums((kxX %*% kXX_1)*kxX))
+  # var <- rep(kern(xp[1,,drop=FALSE],xp[1,,drop=FALSE],param) - rowSums((kxX %*% kXX_1)*kxX)) # rodo : this is issuing a warning, better version below 
+  var <- rep(kern(xp[1,,drop=FALSE],xp[1,,drop=FALSE],param),times=length(xp)) - rowSums((kxX %*% kXX_1)*kxX)
   sd <- sqrt(pmax(1e-12,var))
   u <- (min(F) - m)/sd
   ei <- sd * (u * pnorm(u) + dnorm(u))
