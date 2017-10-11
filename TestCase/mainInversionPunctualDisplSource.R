@@ -133,36 +133,21 @@ text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 ###### build a kriging model #######################
 
 # optimize the model parameters by repeating local searches started from random initial points
-tmin <- rep(0.1,times=nbvar+1)
-tmax <- c(10,rep(10,times=nbvar))
+
 nbtry <- 0 # make it <1 to skip max LL and take a past, a priori theta
-bestLL <- -Inf
 if (nbtry<1){
   # Past results with non-logged outputs
   # bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137
   # i.e., only zs and a are sensitive variables
   # with log(1+wls)
-  bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
+  oLL <- list()
+  oLL$bestthetas <- c(1,2,2,0.3,0.3,0.5) # has LL=-123.8744 but works usually well
   # final thetas= 5.122735 6.87119 7.787931 5.655541 0.7671208 0.04670216  , final LL= -96.75596   
-  bestLL <- logLikelihood(params = bestthetas,kern=kMat52,Xd=Xnorm,F=norm_wls)
+  oLL$bestLL <- logLikelihood(params = bestthetas,kern=kMat52,Xd=Xnorm,F=norm_wls)
 } else {
-  cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
-  for (i in 1:nbtry){
-    tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
-    LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
-    cat(i,"theta_init=",tinit," , LL=",LL,"\n")
-    # although there are bounds on the parameters (length scales and variance are >0), no need to enforce them
-    # because logLikelihood is not sensitive to the sign of them and this allows more optimizers to be used
-    opt_out <- optim(tinit, fn = logLikelihood, kern=kMat52, Xd=Xnorm, F=norm_wls, control=list(fnscale=-1, maxit=500))
-    if (opt_out$value>bestLL){
-      bestLL <- opt_out$value
-      bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
-    }
-    cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
-  }
-
+  oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,nbtry=nbtry,maxit=500,silent=F)
 }
-cat("\n final thetas=",bestthetas," , final LL=",bestLL,"\n")
+cat("\n final thetas=",oLL$bestthetas," , final LL=",oLL$bestLL,"\n")
 
 # make a test set
 ntest <- 110

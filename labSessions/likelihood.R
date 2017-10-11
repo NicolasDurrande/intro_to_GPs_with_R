@@ -45,3 +45,42 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   LL <- -1/2*ndata*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX)%*%F
   return(LL)
 }
+
+# Maximize logLikelihood on params with random restarts and the R optim() function
+#
+# Inputs :
+#   tmin, tmax : lower and upper bounds for initial params in search. Note that the output can be out of bounds
+#   nbtry : number of random restarts for the maximizations of the loglikelihood (LL)
+#   maxit : maxit parameter of optim() base function
+#   silent : logical (T or F) for printing or not maximization steps 
+#
+# Outputs :  a list O with
+#   O$bestthetas : nb variables + 1 vector of parameters
+#   O$bestLL : scalar value of LL at O$bestthetas
+maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=10,nbtry=20,maxit=500,silent=F){
+  npar <- dim(Xd)[2]+1
+  nbvar <- dim(Xd)[2]
+  if (length(tmin)<npar) {tmin <- rep(tmin,times=npar)}
+  if (length(tmax)<npar) {tmax <- rep(tmax,times=npar)}
+  bestLL <- -Inf
+  if (!silent) cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
+  for (i in 1:nbtry){
+    tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
+    LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
+    if (!silent) cat(i,"theta_init=",tinit," , LL=",LL,"\n")
+    # although there are bounds on the parameters (length scales and variance are >0), no need to enforce them
+    # because logLikelihood is not sensitive to the sign of them and this allows more optimizers to be used
+    opt_out <- optim(tinit, fn = logLikelihood, kern=kern, Xd=Xd, F=F, control=list(fnscale=-1, maxit=maxit))
+    if (opt_out$value>bestLL){
+      bestLL <- opt_out$value
+      bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+    }
+    cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
+    
+  }
+  O <- list()
+  O$bestthetas <- bestthetas
+  O$bestLL <- bestLL
+  return(O)
+}
+
