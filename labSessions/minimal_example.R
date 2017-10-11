@@ -25,3 +25,7 @@ plotGPR(x,pred)
 # Compute the expected improvement
 ei <- EI(xp=x, Xd=X, F, kMat52, param_opt)
 plot(x, ei, type='l', main="Expected Improvement", col=darkRed)
+# maximize EI
+oEI <- maxEI(kern=kMat52,Xd=X,F=F,param=param_opt,xmin=0,xmax=1,nbtry=100,maxit=100,silent=TRUE)
+text(x = 0.4, y = 0.04, paste("arg max EI=",format(oEI$var,digits = 5),
+                              "\n max EI=",format(oEI$EI,digits=5)), pos=4, cex = 1.2, col = "black")

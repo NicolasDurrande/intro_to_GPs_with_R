@@ -212,37 +212,22 @@ for (iter in 1:EGOmaxiter){
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
   nbtry <- 100
-  bestEI <- -Inf
-  cat("\n  MAX EI in ",nbtry," restarts of local optimization\n\n")
-  # it is important to restart this optimization as most of the time EI is too flat to allow a 
-  # gradient based search to proceed. An alternative is to use the CMA-ES algorithm (TODO)
-  for (i in 1:nbtry){
-    xinitnorm <- runif(nbvar)
-    aEI <- EI(xp=xinitnorm,Xd=Xnorm,F=norm_wls,kern=kMat52,param=oLL$bestthetas)
-    cat(i,"norm.xinit=",xinitnorm," , EI=",aEI,"\n")
-    # in the optimization, it is important to remain in bounds, i.e., between 0 and 1 with the normalized variables
-    opt_out <- optim(par=xinitnorm,fn = EI,Xd=Xnorm,F=norm_wls,kern=kMat52,param=oLL$bestthetas, 
-                     method="L-BFGS-B", lower=rep(0,nbvar), upper=rep(1,nbvar), control=list(fnscale=-1, maxit=100))
-    if (opt_out$value>bestEI){
-      bestEI <- opt_out$value
-      bestvar <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
-    }
-    cat(" iter var=",opt_out$par," , iter EI=",opt_out$value,"\n")
-  }
-  
+  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,
+               xmin=0,xmax=1,nbtry=10,maxit=100,silent=F)
+
   # calculate function at new point
-  newX <- unnorm_var(Xnorm = bestvar)
+  newX <- unnorm_var(Xnorm = oEI$var)
   newwls <- wls_ulos(as.numeric(newX))  
   newwls_norm <- normalizeWLS(newwls)
   # update data bases
   X <- rbind(X,newX)
-  Xnorm <- rbind(Xnorm,matrix(bestvar,ncol=nbvar,byrow = T))
+  Xnorm <- rbind(Xnorm,matrix(oEI$var,ncol=nbvar,byrow = T))
   wls <- c(wls,newwls)
   norm_wls <- c(norm_wls,newwls_norm)
 
   # some printing and user control
   cat("\n Iteration ",iter," summary:\n")
-  cat("   EI best var=",bestvar," , has EI=",bestEI,"\n")
+  cat("   EI best var=",oEI$var," , has EI=",oEI$EI,"\n")
   cat("   unnormed var= ")
   for (ii in 1:nbvar) {cat(as.numeric(newX[ii]),varnames[ii],"  ")}
   cat(" , wls = ",newwls,"  (norm.wls=",newwls_norm,")\n")

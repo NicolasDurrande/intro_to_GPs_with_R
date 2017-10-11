@@ -57,7 +57,7 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
 # Outputs :  a list O with
 #   O$bestthetas : nb variables + 1 vector of parameters
 #   O$bestLL : scalar value of LL at O$bestthetas
-maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=10,nbtry=20,maxit=500,silent=F){
+maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=10,nbtry=20,maxit=500,silent=FALSE){
   npar <- dim(Xd)[2]+1
   nbvar <- dim(Xd)[2]
   if (length(tmin)<npar) {tmin <- rep(tmin,times=npar)}

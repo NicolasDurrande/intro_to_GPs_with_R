@@ -32,3 +32,44 @@ EI <- function(xp,Xd,F,kern,param=NULL,kernNoise=kWhite,paramNoise=0){
   ei <- sd * (u * pnorm(u) + dnorm(u))
   return(ei)
 }
+
+# Maximize EI with random restarts of the BFGS algorithm
+#
+# Inputs :
+#   kern : kernel of the Gaussian Process
+#   param : parameters of the Gaussian Process
+#   Xd : n by d DoE where d is the number of variables
+#   F : vector of n observations
+#   xmin, xmax : lower and upper bounds for variables
+#   nbtry : number of random restarts for the EI maximizations
+#   maxit : maxit parameter of optim() base function
+#   silent : logical (T or F) for printing or not maximization steps 
+#
+# Outputs :  a list best with
+#   best$var : nb variables vector of parameters
+#   best$EI : scalar value of EI at best$thetas
+maxEI <- function(kern,Xd,F,kernNoise=kWhite,param=NULL,xmin=0,xmax=1,nbtry=50,maxit=100,silent=FALSE)
+{
+  nbvar <- dim(Xd)[2]
+  if (length(xmin)<nbvar) {xmin <- rep(xmin,times=nbvar)}
+  if (length(xmax)<nbvar) {xmax <- rep(xmax,times=nbvar)}
+  best <- list()
+  best$EI <- -Inf
+  if (!silent) {cat("\n  MAX EI in ",nbtry," restarts of local optimization\n\n")}
+  # it is important to restart this optimization as most of the time EI is too flat to allow a 
+  # gradient based search to proceed. An alternative is to use the CMA-ES algorithm (TODO)
+  for (i in 1:nbtry){
+    xinit <- xmin+runif(nbvar)*(xmax-xmin)
+    aEI <- EI(xp=xinit,Xd=Xd,F=F,kern=kern,param=param)
+    if (!silent) {cat(i,"norm.xinit=",xinit," , EI=",aEI,"\n")}
+    # in the optimization, it is important to remain in bounds, i.e., between 0 and 1 with the normalized variables
+    opt_out <- optim(par=xinit,fn = EI,Xd=Xd,F=F,kern=kern,param=param, 
+                     method="L-BFGS-B", lower=xmin, upper=xmax, control=list(fnscale=-1, maxit=maxit))
+    if (opt_out$value>best$EI){
+      best$EI <- opt_out$value
+      best$var <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+    }
+    if (!silent) {cat(" iter var=",opt_out$par," , iter EI=",opt_out$value,"\n")}
+  }
+  return(best)
+}
