@@ -21,11 +21,13 @@ Some data files are provided that describe the digital terrain model and the tar
 
 The identification is performed by optimization where a distance between data (either synthetic or measured) 
 and simulation results is minimized on \emph{optimization variables}. 
+The spherical magma chamber is described by its position (variables $xs$, $ys$ and $zs$), its radius (variable $a$) and 
+its overpressure ($p$), for a total of 5 optimization variables. The Mogi model \cite{} simulates the displacements created 
+by a spherical magma chamber at the surface of a digital terrain.
 
 The optimization problem is tackled with the EGO algorithm \cite{Jones1998}. 
 The generic files for the Gaussian processes and their identification can be found in the \texttt{../labSessions/} directory.
-The spherical magma chamber is described by its position (variables $xs$, $ys$ and $zs$), its radius (variable $a$) and 
-its overpressure ($p$), for a total of 5 optimization variables.
+The files provided are an implementation independent from other libraries meant for both completness and simplicity.
 
 \section{Prerequisites}
 \begin{enumerate}
@@ -43,16 +45,31 @@ We will then proceed in steps, where each step is announced by a line of comment
 During each step, select sections of code with the mouse and \emph{execute} them, either (rstudio) by hitting \texttt{ctrl + return} 
 or, (other text editors) by cutting and pasting in the R console. The main steps are as follows.
 \item Execute \texttt{load utilities}, \texttt{input for variables identification} (where the bounds on the variables are set) and \texttt{load data}.  
+\item Execute \texttt{design of experiments}: the hypercube of possible variables is filled with a Latin Hypercube Sampling. The number of points 
+\texttt{nbinit}, a measure of how much randomness is devoted to the identification, is set there. 
+The weighted least squares distances (WLS) to the target for each set of variables is calculated. The distances are normalized by 
+$\log(1+WLS)$ follow by centering and standardization as a remedy against a large spread with outliers.
+\item Execute \texttt{build a kriging model}: this means selecting a kernel for the Gaussian Process (GP) (default is \texttt{kMat52} for 
+the 5/2 Mat\`ern kernel) and maximizing its log-likelihood with respect to the GP parameters (process variance and length scales).
+\item Execute \texttt{test the kriging model}, which comprises creating a test set, predicting at the test variables, and measuring 
+the discrepancy between the predictions and the test data (RMSE, Q2 and plots).
+\item Execute \texttt{model identification}: iteratively maximize the Expected Improvement (EI) with respect to the model variables, 
+update the design of experiments, and update the GP model (maximize its log-likelihood with respect to the GP parameters).
 \end{enumerate}
+Both the log-likelihood and the EI maximizations are performed by restarting \texttt{nbtry} times 
+a BFGS algorithm with bounds on the variables from randomly chosen points. This strategy is meant to avoid getting trapped in the local 
+minima that both these problems have (in particular EI).
 
 \section{Files list}
 \begin{itemize}
 \item Generic files for building Gaussian Processes and optimizing with them are found in the \texttt{../labSessions/} directory. This directory
 contains the complementary demo files for identifying a spherical reservoir from surface displacements.
+\item \texttt{mainInversionPunctualDisplSource.R}~: main script for the demo.
 \item \texttt{mogi\_3D.R}~: calculate displacements on a digital terrain model from a point-wise spherical source.
 \item \texttt{plots\_3d\_full\_grid.R}~: Load a csv file (full grid), and plots its 3d data.
 \item \texttt{process\_3d\_full\_grid\_from\_matlab.R}~: Load a matlab file (full grid), processes it so that it is plotted and (commented out but working) saved in csv format. Displacements are calculated with \texttt{mogi\_3D.R}.
-\item data files ending in \texttt{.mat} (matlab format) or \texttt{.csv} (csv format).
+\item \texttt{wls\_ulos.R}~: calculates the weighted least squares distance between the model projected displacements and the target.
+\item + data files ending in \texttt{.mat} (matlab format) or \texttt{.csv} (csv format).
 \end{itemize}
 
 % BibTeX users please use one of

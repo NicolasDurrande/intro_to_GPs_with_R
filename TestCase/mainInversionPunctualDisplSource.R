@@ -24,7 +24,7 @@ source("../labSessions/plots.R")
 source("../labSessions/EI.R")
 
 
-####### input for variables identification ###########
+###### input for variables identification ###########
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
 varnames <- c("xs","ys","zs","a","p")
 nbvar <- 5
@@ -82,7 +82,7 @@ rm(data)
 rm(Xdata)
 
 
-######  do a design of experiments #############################
+#######  design of experiments #############################
 
 library(lhs)
 nbinit <- 100 # number of points in the initial design of experiments
@@ -154,6 +154,7 @@ if (nbtry<1){
 }
 cat("\n final thetas=",oLL$bestthetas," , final LL=",oLL$bestLL,"\n")
 
+####### test the kriging model
 # make a test set
 ntest <- 110
 Xtestnorm <- matrix(runif(ntest*nbvar),nrow=ntest)
@@ -166,7 +167,7 @@ lwls_test <- log(1+wls_test)
 wls_testnorm <- (lwls_test - mean_wls)/std_wls
 # wls_testnorm <- (wls_test - mean_wls)/std_wls # linear scaling version
 
-# test the model
+# predict with the model and measure quality of predictions wrt true response 
 pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=oLL$bestthetas)
 # calculate RMSE and Q2
 rmse <- sqrt(mean((wls_testnorm-pred$mean)^2))
@@ -177,7 +178,7 @@ par(mfrow=c(2,3))
 for (i in 1:nbvar){
   plot(Xtest[,i],log(wls_test),xlab=names(Xtest)[i])
 }
-# empty plot + text
+# 
 plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 text(x = 0.5, y = 0.5, paste("TEST SET\n","RMSE=",format(rmse,digits=4),
                              "\n Q2=",format(q2,digits =4), sep=""), cex = 1.2, col = "black")
@@ -204,8 +205,8 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 # Comments : 
 #   the normalization log(1+wls) helps a lot the kriging model
 
-######### model identification through optimization ########
-#         = EGO algorithm 
+######### model identification ########
+#         = EGO algorithm to optimize (minimize) the model-target WLS distance
 
 EGOmaxiter <- 50
 period_upd <- 5
@@ -267,3 +268,6 @@ for (iter in 1:EGOmaxiter){
   }
   
 } # end EGO loop
+
+####### print out results
+# TODO
