@@ -51,7 +51,7 @@ xmag[n2i$p] <- 100 # Source overpressure in MPa
 xmax <- NA
 xmin <- NA
 xmin[n2i$xs]<-364000
-xmax[n2i$xs]<-366000
+xmax[n2i$xs]<-368000
 xmin[n2i$ys]<-7649000
 xmax[n2i$ys]<-7651000
 xmin[n2i$zs]<- -3000
@@ -209,10 +209,10 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 ######### model identification ########
 #         = EGO algorithm to optimize (minimize) the model-target WLS distance
 
-EGOmaxiter <- 50
+EGOmaxiter <- 200
 period_upd <- 5
 
-n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
+n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=FALSE,nbinit=nbinit)
 
 cat("\n******** START EGO \n\n",file = "ego_listen.txt")
 par(mfrow=c(1,1))

@@ -3,7 +3,7 @@ restartEGO <- function(fn,restart=TRUE,nbinit=nbinit)
 # function to restart an EGO run from stored data file fn
 # reloads the data base , calculates n_restart
 {
-  if (file.exists(fn)){
+  if (file.exists(fn) & restart==TRUE){
     load(file=fn)
     n_restart <- dim(Xnorm)[1]-nbinit
     # recalculate mean_wls and std_wls
