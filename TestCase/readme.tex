@@ -22,7 +22,7 @@ Some data files are provided that describe the digital terrain model and the tar
 The identification is performed by optimization where a distance between data (either synthetic or measured) 
 and simulation results is minimized on \emph{optimization variables}. 
 The spherical magma chamber is described by its position (variables $xs$, $ys$ and $zs$), its radius (variable $a$) and 
-its overpressure ($p$), for a total of 5 optimization variables. The Mogi model \cite{} simulates the displacements created 
+its overpressure ($p$), for a total of 5 optimization variables. The Mogi model \cite{Yamakawa1955,Mogi1958} simulates the displacements created 
 by a spherical magma chamber at the surface of a digital terrain.
 
 The optimization problem is tackled with the EGO algorithm \cite{Jones1998}. 
@@ -68,6 +68,7 @@ contains the complementary demo files for identifying a spherical reservoir from
 \item \texttt{mogi\_3D.R}~: calculate displacements on a digital terrain model from a point-wise spherical source.
 \item \texttt{plots\_3d\_full\_grid.R}~: Load a csv file (full grid), and plots its 3d data.
 \item \texttt{process\_3d\_full\_grid\_from\_matlab.R}~: Load a matlab file (full grid), processes it so that it is plotted and (commented out but working) saved in csv format. Displacements are calculated with \texttt{mogi\_3D.R}.
+\item \texttt{restartEGO.R}~: file specific to this demo (\texttt{mainInversionPunctualDisplSource.R}) that contains a function to restart EGO from past convergences.
 \item \texttt{wls\_ulos.R}~: calculates the weighted least squares distance between the model projected displacements and the target.
 \item + data files ending in \texttt{.mat} (matlab format) or \texttt{.csv} (csv format).
 \end{itemize}

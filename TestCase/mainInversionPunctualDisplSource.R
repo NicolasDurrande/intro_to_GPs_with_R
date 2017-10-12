@@ -17,6 +17,7 @@ rm(list=ls()) #  cleaning up
 library(R.matlab)
 source("./mogi_3D.R")
 source("./wls_ulos.R")
+source("./restartEGO.R")
 source("../labSessions/kernels.R")
 source("../labSessions/likelihood.R")
 source("../labSessions/models.R")
@@ -211,19 +212,22 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 EGOmaxiter <- 50
 period_upd <- 5
 
+n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
+
 cat("\n******** START EGO \n\n",file = "ego_listen.txt")
-# x11()
-# hplot_wlsn <- dev.cur()
 par(mfrow=c(1,1))
 uxlim <- dim(Xnorm)[1]+EGOmaxiter
 ytarget <- -mean_wls/std_wls
 yrange <- max(norm_wls)-min(norm_wls)
-plot(x = 1:dim(Xnorm)[1],y=norm_wls,xlab="point number",ylab="norm. WLS",xlim=c(1,uxlim),
+plot(x = 1:nbinit,y=norm_wls[1:nbinit],xlab="point number",ylab="norm. WLS",xlim=c(1,uxlim),
      ylim=c(ytarget-0.2*yrange,max(norm_wls)+0.2*yrange),type="l")
+if (n_restart>0) {
+  lines(x=(nbinit+1):(nbinit+n_restart),y=norm_wls[(nbinit+1):(nbinit+n_restart)],col="blue")
+}
 lines(x=c(1,uxlim),y=c(ytarget,ytarget),lty="dotted",col="red")
 text(x=1,y=ytarget+0.1,labels = "ideal",cex = 0.8,col = "red",pos=4)
 
-for (iter in 1:EGOmaxiter){
+for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
 
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
@@ -238,7 +242,7 @@ for (iter in 1:EGOmaxiter){
   Xnorm <- rbind(Xnorm,matrix(oEI$var,ncol=nbvar,byrow = T))
   wls <- c(wls,newwls)
   norm_wls <- c(norm_wls,newwls_norm)
-  save(Xnorm,X,norm_wls,wls,file="ego_data_gathered.RData")
+  save(Xnorm,X,norm_wls,wls,oLL,file="ego_data_gathered.RData")
 
   # some printing and user control
   cat("\n Iteration ",iter," summary:\n")
@@ -287,3 +291,5 @@ pideal <- (xstar[n2i$a]^3*xstar[n2i$p])/(aideal^3)
 lines(x = aideal,y=pideal,lty="solid",col="red")
 text(x = 400,y=400,labels = "a^3 * p = const.",col = "red")
 legend("topright",legend = c("20% best solutions","ideal solutions"),pch = c(1,NA),lty=c(NA,1),col=c("black","red"))
+
+
