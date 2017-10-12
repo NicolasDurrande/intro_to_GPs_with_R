@@ -57,7 +57,7 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
 # Outputs :  a list O with
 #   O$bestthetas : nb variables + 1 vector of parameters
 #   O$bestLL : scalar value of LL at O$bestthetas
-maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=10,nbtry=20,maxit=500,silent=FALSE){
+maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=5,nbtry=20,maxit=500,silent=FALSE){
   npar <- dim(Xd)[2]+1
   nbvar <- dim(Xd)[2]
   if (length(tmin)<npar) {tmin <- rep(tmin,times=npar)}
@@ -68,12 +68,12 @@ maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=10,nbtry=20,
     tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
     LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
     if (!silent) cat(i,"theta_init=",tinit," , LL=",LL,"\n")
-    # although there are bounds on the parameters (length scales and variance are >0), no need to enforce them
-    # because logLikelihood is not sensitive to the sign of them and this allows more optimizers to be used
-    opt_out <- optim(tinit, fn = logLikelihood, kern=kern, Xd=Xd, F=F, control=list(fnscale=-1, maxit=maxit))
+    # bounds on parameters in loglikelihood are actually important to EI: arg max likelihood typically generates too large
+    # length scales that create really flats plateaus on EI and error in optim()
+    opt_out <- optim(tinit, fn = logLikelihood, kern=kern, Xd=Xd, F=F, method="L-BFGS-B", lower=tmin, upper=tmax,control=list(fnscale=-1, maxit=maxit))
     if (opt_out$value>bestLL){
       bestLL <- opt_out$value
-      bestthetas <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
+      bestthetas <- abs(opt_out$par) # abs because some optimizers (that do not use bounds) go to neg values and they are equiv to positive ones
     }
     cat(" iter thetas=",opt_out$par," , iter LL=",opt_out$value,"\n")
     
