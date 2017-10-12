@@ -270,4 +270,20 @@ for (iter in 1:EGOmaxiter){
 } # end EGO loop
 
 ####### print out results
-# TODO
+# where are the new points
+cols <- character(nrow(X))
+cols[] <- "black"
+cols[nbinit+1:dim(X)[1]] <- "blue"
+pairs(X,col=cols)
+# where are the q percent good points
+qwlsn <- quantile(x=norm_wls,probs = 0.2)
+igood <- which(norm_wls[]<qwlsn)
+pairs(X[igood,])
+# look at non invertibility
+# all optimal solutions have  a^3*p = 500^3*20 
+plot(X[igood,n2i$a],X[igood,n2i$p],xlab="a",ylab="p")
+aideal <- seq(from=xmin[n2i$a],to=xmax[n2i$a],length.out = 100)
+pideal <- (xstar[n2i$a]^3*xstar[n2i$p])/(aideal^3)
+lines(x = aideal,y=pideal,lty="solid",col="red")
+text(x = 400,y=400,labels = "a^3 * p = const.",col = "red")
+legend("topright",legend = c("20% best solutions","ideal solutions"),pch = c(1,NA),lty=c(NA,1),col=c("black","red"))
