@@ -10,6 +10,8 @@
 # * use of global variables, starting with Glb_...
 ###########################
 
+####### load utilities ##########################
+
 rm(list=ls()) #  cleaning up
 
 library(R.matlab)
@@ -224,8 +226,7 @@ for (iter in 1:EGOmaxiter){
 
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
-  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,
-               xmin=0,xmax=1,nbtry=100,maxit=100,silent=F)
+  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,xmin=0,xmax=1,nbtry=100,maxit=100,silent=F) 
 
   # calculate function at new point
   newX <- unnorm_var(Xnorm = oEI$var)

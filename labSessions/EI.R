@@ -63,8 +63,20 @@ maxEI <- function(kern,Xd,F,kernNoise=kWhite,param=NULL,xmin=0,xmax=1,nbtry=50,m
     aEI <- EI(xp=xinit,Xd=Xd,F=F,kern=kern,param=param)
     if (!silent) {cat(i,"norm.xinit=",xinit," , EI=",aEI,"\n")}
     # in the optimization, it is important to remain in bounds, i.e., between 0 and 1 with the normalized variables
+    tryCatch({ # optim generates errors when EI becomes too flat...
     opt_out <- optim(par=xinit,fn = EI,Xd=Xd,F=F,kern=kern,param=param, 
                      method="L-BFGS-B", lower=xmin, upper=xmax, control=list(fnscale=-1, maxit=maxit))
+    }, warning = function(war) {
+      print(paste("optim warning, cancelling the optim:  ",war))
+      opt_out <- list()
+      opt_out$value <- -Inf
+      return(opt_out)
+    }, error = function(err) {
+      print(paste("optim error:  ",err))
+      opt_out <- list()
+      opt_out$value <- -Inf
+      return(opt_out)
+    }, finally = {}) # end tryCatch
     if (opt_out$value>best$EI){
       best$EI <- opt_out$value
       best$var <- abs(opt_out$par) # abs because some optimizers go to neg values and they are equiv to positive ones
