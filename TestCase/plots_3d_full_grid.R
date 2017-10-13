@@ -60,6 +60,8 @@ rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
 # contour plots of displacements
 # par(mfrow=c(1,1))
+png(filename="./contour.png")
 image(xvec,yvec,t(ulos),xlab="x",ylab="y")
 contour(xvec,yvec,t(ulos),add=TRUE,nlevels=20)
 title("Displ. projected on LOS")
+dev.off()
