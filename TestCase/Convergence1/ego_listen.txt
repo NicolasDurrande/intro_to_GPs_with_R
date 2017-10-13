@@ -521,3 +521,147 @@
  Iteration  124  summary:
    EI best var= 0.5435885 0.630066 0 0 0  , has EI= 0.108357 
    unnormed var= 366174.4 xs   7650260 ys   -3000 zs   50 a   -500 p    , wls =  111.8607   (norm.wls= -1.226817 )
+
+
+
+******** START EGO 
+
+
+ Iteration  125  summary:
+   EI best var= 1 0.5361491 0.08788582 0.1883783 0.5626177  , has EI= 0.1124387 
+   unnormed var= 368000 xs   7650072 ys   -2648.457 zs   228.9594 a   62.61769 p    , wls =  91.61873   (norm.wls= -1.287784 )
+   max LL, new thetas= 0.846504 3 3 3 0.5725774 0.3477898  with LL= -245.6915 
+
+ Iteration  126  summary:
+   EI best var= 0 0 0 0 1  , has EI= 1.778507e-30 
+   unnormed var= 364000 xs   7649000 ys   -3000 zs   50 a   500 p    , wls =  109.1466   (norm.wls= -1.234325 )
+
+ Iteration  127  summary:
+   EI best var= 0.9691806 0.08989299 0.8370573 0 0.09886115  , has EI= 6.540657e-37 
+   unnormed var= 367876.7 xs   7649180 ys   348.2293 zs   50 a   -401.1388 p    , wls =  115.1931   (norm.wls= -1.217841 )
+
+ Iteration  128  summary:
+   EI best var= 0.1276955 0.9796476 0.1607622 0.1151441 0  , has EI= 1.753127e-44 
+   unnormed var= 364510.8 xs   7650959 ys   -2356.951 zs   159.3869 a   -500 p    , wls =  173.1479   (norm.wls= -1.09303 )
+
+ Iteration  129  summary:
+   EI best var= 1 0 1 1 0  , has EI= 4.018115e-38 
+   unnormed var= 368000 xs   7649000 ys   1000 zs   1000 a   -500 p    , wls =  59963557   (norm.wls= 2.839401 )
+
+ Iteration  130  summary:
+   EI best var= 0.8895756 0.9690003 0.5397021 0.1169891 1  , has EI= 4.536211e-27 
+   unnormed var= 367558.3 xs   7650938 ys   -841.1917 zs   161.1396 a   500 p    , wls =  33.72065   (norm.wls= -1.590414 )
+   max LL, new thetas= 0.9286333 3 3 3 0.5967849 0.3661833  with LL= -251.6484 
+
+ Iteration  131  summary:
+   EI best var= 1 1 1 0 0  , has EI= 2.169967e-21 
+   unnormed var= 368000 xs   7651000 ys   1000 zs   50 a   -500 p    , wls =  119.5167   (norm.wls= -1.206572 )
+
+ Iteration  132  summary:
+   EI best var= 0.9484689 0.1998814 0.01520643 0.1945424 0.1405669  , has EI= 3.445486e-46 
+   unnormed var= 367793.9 xs   7649400 ys   -2939.174 zs   234.8152 a   -359.4331 p    , wls =  282.894   (norm.wls= -0.9422955 )
+
+ Iteration  133  summary:
+   EI best var= 0 1 1 1 0  , has EI= 7.371795e-48 
+   unnormed var= 364000 xs   7651000 ys   1000 zs   1000 a   -500 p    , wls =  27383080   (norm.wls= 2.597641 )
+
+ Iteration  134  summary:
+   EI best var= 0.9864102 0.06173132 0.254425 0.873905 0.2059563  , has EI= 1.664788e-43 
+   unnormed var= 367945.6 xs   7649123 ys   -1982.3 zs   880.2097 a   -294.0437 p    , wls =  184774.7   (norm.wls= 1.055882 )
+
+ Iteration  135  summary:
+   EI best var= 0.5211736 0.856921 0.0006821274 0.1775287 0.170066  , has EI= 1.31365e-41 
+   unnormed var= 366084.7 xs   7650714 ys   -2997.271 zs   218.6522 a   -329.934 p    , wls =  225.2962   (norm.wls= -1.012237 )
+   max LL, new thetas= 0.9693803 3 3 3 0.6090913 0.3776528  with LL= -257.0734 
+
+ Iteration  136  summary:
+   EI best var= 1 0 0 1 1  , has EI= 1.537473e-51 
+   unnormed var= 368000 xs   7649000 ys   -3000 zs   1000 a   500 p    , wls =  627430   (norm.wls= 1.43295 )
+
+ Iteration  137  summary:
+   EI best var= 0.9420999 0.9047575 0.9212895 0 0.5820797  , has EI= 5.027376e-62 
+   unnormed var= 367768.4 xs   7650810 ys   685.158 zs   50 a   82.07967 p    , wls =  109.028   (norm.wls= -1.234657 )
+
+ Iteration  138  summary:
+   EI best var= 0.9092584 0.01230801 0.9558704 0.1557826 0.02827528  , has EI= 1.449936e-51 
+   unnormed var= 367637 xs   7649025 ys   823.4814 zs   197.9934 a   -471.7247 p    , wls =  2015.516   (norm.wls= -0.3375874 )
+
+ Iteration  139  summary:
+   EI best var= 0 1 1 0 1  , has EI= 2.013221e-39 
+   unnormed var= 364000 xs   7651000 ys   1000 zs   50 a   500 p    , wls =  107.9679   (norm.wls= -1.237643 )
+
+ Iteration  140  summary:
+   EI best var= 0.7054864 0.8868007 0.9888351 0.0007153095 0.7795009  , has EI= 3.970712e-52 
+   unnormed var= 366821.9 xs   7650774 ys   955.3402 zs   50.67954 a   279.5009 p    , wls =  105.2359   (norm.wls= -1.245475 )
+   max LL, new thetas= 0.9605962 3 3 3 0.6140039 0.380078  with LL= -262.1465 
+
+ Iteration  141  summary:
+   EI best var= 0 0.1960881 0.002030045 0.3116125 0.4032605  , has EI= 1.982323e-60 
+   unnormed var= 364000 xs   7649392 ys   -2991.88 zs   346.0319 a   -96.73951 p    , wls =  223.2112   (norm.wls= -1.015092 )
+
+ Iteration  142  summary:
+   EI best var= 0.07235131 0.9468568 0.5908862 0 0.156768  , has EI= 2.610105e-51 
+   unnormed var= 364289.4 xs   7650894 ys   -636.4553 zs   50 a   -343.232 p    , wls =  111.8608   (norm.wls= -1.226817 )
+
+ Iteration  143  summary:
+   EI best var= 1 1 1 1 1  , has EI= 1.027287e-55 
+   unnormed var= 368000 xs   7651000 ys   1000 zs   1000 a   500 p    , wls =  40012592   (norm.wls= 2.714623 )
+
+ Iteration  144  summary:
+   EI best var= 0.04199475 0.7272948 0.8559152 0.07373118 0.710936  , has EI= 3.552224e-72 
+   unnormed var= 364168 xs   7650455 ys   423.6607 zs   120.0446 a   210.936 p    , wls =  98.60099   (norm.wls= -1.265366 )
+
+ Iteration  145  summary:
+   EI best var= 0.9959967 0.08452721 0.6850865 0.09013624 0.8844167  , has EI= 5.736007e-67 
+   unnormed var= 367984 xs   7649169 ys   -259.6538 zs   135.6294 a   384.4167 p    , wls =  61.06717   (norm.wls= -1.411246 )
+   max LL, new thetas= 1.024943 3 3 3 0.6373737 0.3915649  with LL= -267.8067 
+
+ Iteration  146  summary:
+   EI best var= 0.6342062 0.363026 0.02993059 0.4951162 0.3046973  , has EI= 3.338941e-73 
+   unnormed var= 366536.8 xs   7649726 ys   -2880.278 zs   520.3604 a   -195.3027 p    , wls =  2799.488   (norm.wls= -0.2362881 )
+
+ Iteration  147  summary:
+   EI best var= 0.6758994 0.3831821 0.4499232 0.2199549 0.5863908  , has EI= 1.179661e-78 
+   unnormed var= 366703.6 xs   7649766 ys   -1200.307 zs   258.9571 a   86.39077 p    , wls =  50.73315   (norm.wls= -1.467418 )
+
+ Iteration  148  summary:
+   EI best var= 0.4454259 0.560233 0.8684134 0.05865691 1  , has EI= 1.5043e-86 
+   unnormed var= 365781.7 xs   7650120 ys   473.6535 zs   105.7241 a   500 p    , wls =  68.9454   (norm.wls= -1.374387 )
+
+ Iteration  149  summary:
+   EI best var= 0.1580833 0.05965971 0.9248163 0.09585826 0.6333801  , has EI= 7.413324e-65 
+   unnormed var= 364632.3 xs   7649119 ys   699.2652 zs   141.0653 a   133.3801 p    , wls =  99.15134   (norm.wls= -1.263667 )
+
+ Iteration  150  summary:
+   EI best var= 0.5434849 0.6067118 0.6556929 0.3512492 0.5580267  , has EI= 8.781414e-44 
+   unnormed var= 366173.9 xs   7650213 ys   -377.2285 zs   383.6868 a   58.02671 p    , wls =  20.60693   (norm.wls= -1.736714 )
+   max LL, new thetas= 1.014427 3 3 3 0.6339011 0.3876044  with LL= -272.7629 
+
+ Iteration  151  summary:
+   EI best var= 1 0 1 0 1  , has EI= 3.912503e-47 
+   unnormed var= 368000 xs   7649000 ys   1000 zs   50 a   500 p    , wls =  102.6981   (norm.wls= -1.252933 )
+
+ Iteration  152  summary:
+   EI best var= 0.1295107 0.6237493 0.9884501 0.1675998 0.4701835  , has EI= 7.394435e-61 
+   unnormed var= 364518 xs   7650247 ys   953.8006 zs   209.2198 a   -29.81646 p    , wls =  134.0205   (norm.wls= -1.171522 )
+
+ Iteration  153  summary:
+   EI best var= 0 0 1 0 1  , has EI= 3.740957e-52 
+   unnormed var= 364000 xs   7649000 ys   1000 zs   50 a   500 p    , wls =  108.6247   (norm.wls= -1.23579 )
+
+ Iteration  154  summary:
+   EI best var= 0.9773305 0.8179041 0.9558945 0.3710447 0  , has EI= 4.23499e-78 
+   unnormed var= 367909.3 xs   7650636 ys   823.5778 zs   402.4924 a   -500 p    , wls =  92038.79   (norm.wls= 0.8409227 )
+
+ Iteration  155  summary:
+   EI best var= 0.3321415 0.9032091 0.9791646 0 0.1903662  , has EI= 2.613846e-73 
+   unnormed var= 365328.6 xs   7650806 ys   916.6584 zs   50 a   -309.6338 p    , wls =  113.8442   (norm.wls= -1.221443 )
+   max LL, new thetas= 1.012529 3 3 3 0.6340682 0.3909816  with LL= -277.9116 
+
+ Iteration  156  summary:
+   EI best var= 0.01992291 0.2915582 0.9441243 0.0007176558 0.1805298  , has EI= 3.674378e-60 
+   unnormed var= 364079.7 xs   7649583 ys   776.4972 zs   50.68177 a   -319.4702 p    , wls =  112.1039   (norm.wls= -1.226153 )
+
+ Iteration  157  summary:
+   EI best var= 0.005720934 0.250087 0.02658368 0.553785 1  , has EI= 6.509488e-72 
+   unnormed var= 364022.9 xs   7649500 ys   -2893.665 zs   576.0957 a   500 p    , wls =  21351.85   (norm.wls= 0.390278 )
