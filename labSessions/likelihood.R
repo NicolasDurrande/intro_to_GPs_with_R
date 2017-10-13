@@ -24,7 +24,7 @@
 # rodo change X into Xd as function parameter name to avoid confusion when used with apply(X=)
 logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   if(is.null(kernNoise)){
-    kXX <- kern(Xd,Xd,params) 
+    kXX <- kern(Xd,Xd,params) + kWhite(Xd,Xd,1e-10)
   }else if(kernNoise==kWhite){
     param = params[-lenght(params)]
     paramNoise = params[lenght(params)]
@@ -34,15 +34,15 @@ logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   }
   ndata <- nrow(Xd)
   # rodo add something on the diagonal to avoid singularity
-  detkXX <- det(kXX)
-  eps <- 1.e-14
-  tau <- 1.e-14
-  while (detkXX<eps & tau<1) {
-    tau <- tau*100
-    kXX <- kXX + tau*diag(ndata)
-    detkXX <- det(kXX)
-  }
-  LL <- -1/2*ndata*log(2*pi) - 1/2*log(det(kXX)) - 1/2*t(F)%*%solve(kXX)%*%F
+  #detkXX <- det(kXX)
+  #eps <- 1.e-14
+  #tau <- 1.e-14
+  #while (detkXX<eps & tau<1) {
+  #  tau <- tau*100
+  #  kXX <- kXX + tau*diag(ndata)
+  #  detkXX <- det(kXX)
+  #}
+  LL <- -1/2*ndata*log(2*pi) - 1/2*determinant(kXX)$modulus - 1/2*t(F)%*%solve(kXX)%*%F
   return(LL)
 }
 
@@ -66,7 +66,7 @@ maxlogLikelihood <- function(kern,Xd,F,kernNoise=NULL,tmin=0.1,tmax=5,nbtry=20,m
   if (!silent) cat("\n  MAX LIKELIHOOD in ",nbtry," restarts\n\n")
   for (i in 1:nbtry){
     tinit <- tmin + runif(nbvar+1)*(tmax-tmin)
-    LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xnorm,F=norm_wls)
+    LL <- logLikelihood(params = tinit,kern=kMat52,Xd=Xd,F=F)
     if (!silent) cat(i,"theta_init=",tinit," , LL=",LL,"\n")
     # bounds on parameters in loglikelihood are actually important to EI: arg max likelihood typically generates too large
     # length scales that create really flats plateaus on EI and error in optim()

@@ -22,7 +22,7 @@
 #' pred[[2]] # or pred$cov
 #' 
 #' @export
-predGPR <- function(x,X,F,kern,param=NULL,kernNoise=kWhite,paramNoise=0){
+predGPR <- function(x,X,F,kern,param=NULL,kernNoise=kWhite,paramNoise=1e-10){
   kxX <- kern(x,X,param)
   kXX_1 <- solve(kern(X,X,param) + kernNoise(X,X,paramNoise))
   m <- kxX %*% kXX_1 %*% F
