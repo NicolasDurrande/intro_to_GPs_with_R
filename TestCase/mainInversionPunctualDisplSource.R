@@ -17,6 +17,7 @@ rm(list=ls()) #  cleaning up
 library(R.matlab)
 source("./mogi_3D.R")
 source("./wls_ulos.R")
+source("./restartEGO.R")
 source("../labSessions/kernels.R")
 source("../labSessions/likelihood.R")
 source("../labSessions/models.R")
@@ -24,7 +25,7 @@ source("../labSessions/plots.R")
 source("../labSessions/EI.R")
 
 
-####### input for variables identification ###########
+###### input for variables identification ###########
 n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
 varnames <- c("xs","ys","zs","a","p")
 nbvar <- 5
@@ -50,7 +51,7 @@ xmag[n2i$p] <- 100 # Source overpressure in MPa
 xmax <- NA
 xmin <- NA
 xmin[n2i$xs]<-364000
-xmax[n2i$xs]<-366000
+xmax[n2i$xs]<-368000
 xmin[n2i$ys]<-7649000
 xmax[n2i$ys]<-7651000
 xmin[n2i$zs]<- -3000
@@ -82,7 +83,7 @@ rm(data)
 rm(Xdata)
 
 
-######  do a design of experiments #############################
+#######  design of experiments #############################
 
 library(lhs)
 nbinit <- 100 # number of points in the initial design of experiments
@@ -154,6 +155,7 @@ if (nbtry<1){
 }
 cat("\n final thetas=",oLL$bestthetas," , final LL=",oLL$bestLL,"\n")
 
+####### test the kriging model
 # make a test set
 ntest <- 110
 Xtestnorm <- matrix(runif(ntest*nbvar),nrow=ntest)
@@ -166,7 +168,7 @@ lwls_test <- log(1+wls_test)
 wls_testnorm <- (lwls_test - mean_wls)/std_wls
 # wls_testnorm <- (wls_test - mean_wls)/std_wls # linear scaling version
 
-# test the model
+# predict with the model and measure quality of predictions wrt true response 
 pred <- predGPR(x=Xtestnorm, X=Xnorm, F=norm_wls, kern=kMat52, param=oLL$bestthetas)
 # calculate RMSE and Q2
 rmse <- sqrt(mean((wls_testnorm-pred$mean)^2))
@@ -177,7 +179,7 @@ par(mfrow=c(2,3))
 for (i in 1:nbvar){
   plot(Xtest[,i],log(wls_test),xlab=names(Xtest)[i])
 }
-# empty plot + text
+# 
 plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 text(x = 0.5, y = 0.5, paste("TEST SET\n","RMSE=",format(rmse,digits=4),
                              "\n Q2=",format(q2,digits =4), sep=""), cex = 1.2, col = "black")
@@ -204,25 +206,28 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 # Comments : 
 #   the normalization log(1+wls) helps a lot the kriging model
 
-######### model identification through optimization ########
-#         = EGO algorithm 
+######### model identification ########
+#         = EGO algorithm to optimize (minimize) the model-target WLS distance
 
-EGOmaxiter <- 50
+EGOmaxiter <- 200
 period_upd <- 5
 
+n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
+
 cat("\n******** START EGO \n\n",file = "ego_listen.txt")
-# x11()
-# hplot_wlsn <- dev.cur()
 par(mfrow=c(1,1))
 uxlim <- dim(Xnorm)[1]+EGOmaxiter
 ytarget <- -mean_wls/std_wls
 yrange <- max(norm_wls)-min(norm_wls)
-plot(x = 1:dim(Xnorm)[1],y=norm_wls,xlab="point number",ylab="norm. WLS",xlim=c(1,uxlim),
+plot(x = 1:nbinit,y=norm_wls[1:nbinit],xlab="point number",ylab="norm. WLS",xlim=c(1,uxlim),
      ylim=c(ytarget-0.2*yrange,max(norm_wls)+0.2*yrange),type="l")
+if (n_restart>0) {
+  lines(x=(nbinit+1):(nbinit+n_restart),y=norm_wls[(nbinit+1):(nbinit+n_restart)],col="blue")
+}
 lines(x=c(1,uxlim),y=c(ytarget,ytarget),lty="dotted",col="red")
 text(x=1,y=ytarget+0.1,labels = "ideal",cex = 0.8,col = "red",pos=4)
 
-for (iter in 1:EGOmaxiter){
+for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
 
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
@@ -237,7 +242,7 @@ for (iter in 1:EGOmaxiter){
   Xnorm <- rbind(Xnorm,matrix(oEI$var,ncol=nbvar,byrow = T))
   wls <- c(wls,newwls)
   norm_wls <- c(norm_wls,newwls_norm)
-  save(Xnorm,X,norm_wls,wls,file="ego_data_gathered.RData")
+  save(Xnorm,X,norm_wls,wls,oLL,file="ego_data_gathered.RData")
 
   # some printing and user control
   cat("\n Iteration ",iter," summary:\n")
@@ -267,3 +272,24 @@ for (iter in 1:EGOmaxiter){
   }
   
 } # end EGO loop
+
+####### print out results
+# where are the new points
+cols <- character(nrow(X))
+cols[] <- "black"
+cols[nbinit+1:dim(X)[1]] <- "blue"
+pairs(X,col=cols)
+# where are the q percent good points
+qwlsn <- quantile(x=norm_wls,probs = 0.2)
+igood <- which(norm_wls[]<qwlsn)
+pairs(X[igood,])
+# look at non invertibility
+# all optimal solutions have  a^3*p = 500^3*20 
+plot(X[igood,n2i$a],X[igood,n2i$p],xlab="a",ylab="p")
+aideal <- seq(from=xmin[n2i$a],to=xmax[n2i$a],length.out = 100)
+pideal <- (xstar[n2i$a]^3*xstar[n2i$p])/(aideal^3)
+lines(x = aideal,y=pideal,lty="solid",col="red")
+text(x = 400,y=400,labels = "a^3 * p = const.",col = "red")
+legend("topright",legend = c("20% best solutions","ideal solutions"),pch = c(1,NA),lty=c(NA,1),col=c("black","red"))
+
+
