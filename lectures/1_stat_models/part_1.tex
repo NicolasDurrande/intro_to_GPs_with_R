@@ -92,12 +92,12 @@ real \vspace{1.cm} & numerical \\
 \begin{frame}{}
 In all these cases, the quantity of interest (drag, misfit \dots) can be seen as a function of the input parameters
 
-$$ y = f(x). $$
+$$ y = f(X) $$
 where $f$ is a \textbf{costly to evaluate function}. \\
 \vspace{5mm}
 In the following, we will assume that
 \begin{itemize}
-	\item $x \in \mathds{R}^d$: There are $d$ input variables,
+	\item $X \in \mathds{R}^d$: There are $d$ input variables,
 	\item $y \in \mathds{R}$: The output is a scalar.
 \end{itemize}
 \end{frame}
@@ -199,13 +199,27 @@ There are many surrogate methods available on the market
 	\item Neural Networks
     \item ...
 \end{itemize}
-In this course we will focus on \textbf{Gaussian Process Regression}.
+In this course we will focus on \textbf{Gaussian Process Regression}. \\
+{\tiny (This notation may a few times be ambiguous as $X$ will also denote the random variable associated to $x$
+but the context should allow understanding)}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-Our breadcrumb example: \textbf{identification of a spherical magma reservoir} from measured displacements 
+A breadcrumb example: \textbf{identification of a spherical magma reservoir} from measured displacements 
 along a satellite line of sight.
+\begin{equation*}
+\begin{split}
+& \min_{x \in [x^L,x^U] \subset \mathds{R}^d} f(x) \quad \text{ where the misfit is}\\
+& ~ f(x) ~=~\frac{1}{2} (U(x) - U^{m})^\top C^{-1} (U(x) - U^{m})
+\end{split}
+\end{equation*}
+\begin{itemize}
+\item $U^m$: $m \times 1$ displacements projected on the line of sight.
+\item $U(x)$: $m \times 1$ Mogi model displacements projected on the line of sight.
+\item $x$: identification variables, the coordinates, radius and overpressure of a spherical magma reservoir, $x = \{xs,ys,zs,a,p\}$, resp.
+\item $C$: $m \times m$ covariance matrix of the measures.
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

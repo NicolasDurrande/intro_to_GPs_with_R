@@ -211,7 +211,7 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 EGOmaxiter <- 200
 period_upd <- 5
 
-n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=FALSE,nbinit=nbinit)
+n_restart <- restartEGO(fn="./Convergence2/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
 
 cat("\n******** START EGO \n\n",file = "ego_listen.txt")
 par(mfrow=c(1,1))
