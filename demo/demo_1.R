@@ -78,21 +78,25 @@ persp3d(xgrid, ygrid, Z, col='wheat')
 plot3d(X[,1], X[,2], F)
 
 ## what prior seem appropriate ?
-K <- kExp(Xgrid,Xgrid,param=c(1,4000,4000))
+K <- kExp(Xgrid,Xgrid,param=c(1,3000,3000))
 Z <- mvrnorm(1,rep(0,nrow(K)),K)
 persp3d(xgrid,ygrid,Z,col='wheat')
 
-K <- kMat32(Xgrid,Xgrid,param=c(1,4000,4000))
+K <- kMat32(Xgrid,Xgrid,param=c(1,3000,3000))
 Z <- mvrnorm(1,rep(0,nrow(K)),K)
 persp3d(xgrid,ygrid,Z,col='wheat')
 
-K <- kMat52(Xgrid,Xgrid,param=c(1,4000,4000))
+K <- kMat52(Xgrid,Xgrid,param=c(1,3000,3000))
+Z <- mvrnorm(1,rep(0,nrow(K)),K)
+persp3d(xgrid,ygrid,Z,col='wheat')
+
+K <- kGauss(Xgrid,Xgrid,param=c(1,3000,3000))
 Z <- mvrnorm(1,rep(0,nrow(K)),K)
 persp3d(xgrid,ygrid,Z,col='wheat')
 
 ## build a GPR model
 pred <- predGPR(Xgrid, X, F,
-                kern=kMat52, param=c(1e-3,4000,4000))
+                kern=kGauss, param=c(1e-3,3000,3000))
 
 pred_sd <- pmax(rep(0,ncol(pred$cov)), diag(pred$cov))
 pred_upper95 <- pred$mean + 2*sqrt(pred_sd)
@@ -132,7 +136,7 @@ spheres3d(X[,1], X[,2], F,radius=200)
 
 ## plot log likelihood
 sig2_grid <- seq(1e-4, 1e-3, length=30)
-theta_grid <- seq(1000, 5000, length=30)
+theta_grid <- seq(500, 3000, length=30)
 
 PARAM <- as.matrix(expand.grid(sig2_grid, theta_grid))
 LL <- rep(0, nrow(PARAM))
@@ -143,4 +147,22 @@ for(i in 1:nrow(PARAM)){
 
 persp3d(sig2_grid, theta_grid, LL, col='red')
 
-maxlogLikelihood(kMat52,X,F)
+## optimisation
+indmax <- which.max(LL)
+paropt <- c(PARAM[indmax,], PARAM[indmax,2])
+spheres3d(paropt[1], paropt[2], LL[indmax], radius=20)
+
+## model associated with optimal parameters
+pred <- predGPR(Xgrid, X, F,
+                kern=kGauss, param=paropt)
+
+pred_sd <- pmax(rep(0,ncol(pred$cov)), diag(pred$cov))
+pred_upper95 <- pred$mean + 2*sqrt(pred_sd)
+pred_lower95 <- pred$mean - 2*sqrt(pred_sd)
+
+persp3d(xgrid, ygrid, pred$mean, col='red')
+surface3d(xgrid, ygrid, pred_lower95, col='wheat', alpha=.8)
+surface3d(xgrid, ygrid, pred_upper95, col='wheat', alpha=.8)
+spheres3d(X[,1], X[,2], F,radius=200)
+
+#maxlogLikelihood(kMat52,X,F)

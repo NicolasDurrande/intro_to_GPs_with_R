@@ -24,7 +24,7 @@
 # rodo change X into Xd as function parameter name to avoid confusion when used with apply(X=)
 logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
   if(is.null(kernNoise)){
-    kXX <- kern(Xd,Xd,params) + kWhite(Xd,Xd,1e-10)
+    kXX <- kern(Xd,Xd,params) + kWhite(Xd,Xd,1e-6)
   }else if(kernNoise==kWhite){
     param = params[-lenght(params)]
     paramNoise = params[lenght(params)]

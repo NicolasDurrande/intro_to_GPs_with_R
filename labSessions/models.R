@@ -22,9 +22,9 @@
 #' pred[[2]] # or pred$cov
 #' 
 #' @export
-predGPR <- function(x,X,F,kern,param=NULL,kernNoise=kWhite,paramNoise=1e-10){
+predGPR <- function(x,X,F,kern,param=NULL,kernNoise=kWhite,paramNoise=1e-6){
   kxX <- kern(x,X,param)
-  kXX_1 <- solve(kern(X,X,param) + kernNoise(X,X,paramNoise))
+  kXX_1 <- ginv(kern(X,X,param) + kernNoise(X,X,paramNoise))
   m <- kxX %*% kXX_1 %*% F
   K <- kern(x,x,param) - kxX %*% kXX_1 %*% t(kxX)
   return(list(mean=m,cov=K))
