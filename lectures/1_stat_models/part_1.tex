@@ -1,65 +1,103 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Statistical Models]{Statistical models in engineering?}
+\section[Statistical Models]{Statistical models in engineering and physics?}
 \subsection{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-There is a wide variety of situations where getting data about a system performance can be extremely expensive.
+There is a wide variety of situations where getting data about a system performance can be extremely expensive:
 \begin{itemize}
-	\item real world experiments
+	\item real world experiments in particular
+\begin{itemize}
 	\item destructive tests
 	\item prototyping
-	\item numerical experiments
+\end{itemize}
+	\item and even numerical experiments (e.g. non linear, with uncertainties, \dots): 
+Numerical experiments are less expensive but can be very time consuming! (expl.: 15 min / execution, 5 parameters, a grid with 10 levels,
+total time = $10^5 \times 15$ min $>$ 2 years and 10 months)
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-\begin{exampleblock}{Example: real world experiments}
+\begin{exampleblock}{Example: boat hull design}
 \begin{center}
-\includegraphics[height=5cm]{1_stat_models/figures/drilling}
+\begin{tabular}{cc}
+real \vspace{1.cm} & numerical \\
+\includegraphics[height=3.5cm]{1_stat_models/figures/carene2} &
+\includegraphics[height=3.5cm]{1_stat_models/figures/waterflow}
+\end{tabular}
 \end{center}
 \end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-\begin{exampleblock}{Example: Destructive tests}
+\begin{exampleblock}{Example: volcano internal structure identification}
 \begin{center}
-\includegraphics[height=5cm]{1_stat_models/figures/crash-test}
+\begin{tabular}{cc}
+real \vspace{1.cm} & numerical \\
+\begin{minipage}[t]{0.4\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{1_stat_models/figures/piton_fournaise_5dike_intrusions_98_00} \\
+{\tiny displacements resulting from 5 dike intrusions in the Piton de la Fournaise between 1998 and 2000}
+\end{center}
+\end{minipage} &
+
+\includegraphics[height=2.7cm]{1_stat_models/figures/piton_ulos_2}
+\end{tabular}
 \end{center}
 \end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Example: Prototyping of a boat shape}
-\begin{center}
-\includegraphics[height=3.5cm]{1_stat_models/figures/carene} \qquad \includegraphics[height=3.5cm]{1_stat_models/figures/carene2}
-\end{center}
-Knowing the drag for a given design requires costly experiments
-\end{exampleblock}
-\end{frame}
+%\begin{frame}{}
+%\begin{exampleblock}{Example: real world experiments}
+%\begin{center}
+%\includegraphics[height=5cm]{1_stat_models/figures/drilling}
+%\end{center}
+%\end{exampleblock}
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%\begin{exampleblock}{Example: Destructive tests}
+%\begin{center}
+%\includegraphics[height=5cm]{1_stat_models/figures/crash-test}
+%\end{center}
+%\end{exampleblock}
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%\begin{exampleblock}{Example: Prototyping of a boat shape}
+%\begin{center}
+%\includegraphics[height=3.5cm]{1_stat_models/figures/carene} \qquad \includegraphics[height=3.5cm]{1_stat_models/figures/carene2}
+%\end{center}
+%Knowing the drag for a given design requires costly experiments
+%\end{exampleblock}
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%\begin{exampleblock}{Example: Numerical experiments}
+%\begin{center}
+%\includegraphics[height=2.8cm]{1_stat_models/figures/waterflow} \qquad \includegraphics[height=4.2cm]{1_stat_models/figures/crash/image15}
+%\end{center}
+%Numerical experiments are less expensive but can be very time consuming! (expl.: 15 min / execution, 5 parameters, a grid with 10 levels, 
+%total time = $10^5 \times 15$ min $>$ 2 years and 10 months)
+%\end{exampleblock}
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-\begin{exampleblock}{Example: Numerical experiments}
-\begin{center}
-\includegraphics[height=2.8cm]{1_stat_models/figures/waterflow} \qquad \includegraphics[height=4.2cm]{1_stat_models/figures/crash/image15}
-\end{center}
-Numerical experiments are less expensive but can be very time consuming!
-\end{exampleblock}
-\end{frame}
+In all these cases, the quantity of interest (drag, misfit \dots) can be seen as a function of the input parameters
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-In all these cases, the variable of interest can be seen as a function of the input parameters
 $$ y = f(x). $$
 where $f$ is a \textbf{costly to evaluate function}. \\
 \vspace{5mm}
 In the following, we will assume that
 \begin{itemize}
-	\item $x \in \mathds{R}^d$: There are many input parameters
+	\item $x \in \mathds{R}^d$: There are $d$ input variables,
 	\item $y \in \mathds{R}$: The output is a scalar.
 \end{itemize}
 \end{frame}
@@ -162,6 +200,12 @@ There are many surrogate methods available on the market
     \item ...
 \end{itemize}
 In this course we will focus on \textbf{Gaussian Process Regression}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+Our breadcrumb example: \textbf{identification of a spherical magma reservoir} from measured displacements 
+along a satellite line of sight.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

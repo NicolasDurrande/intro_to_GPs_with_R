@@ -201,7 +201,6 @@ points(x=1:length(pred$mean),y=(pred$mean-sdtest),pch="-")
 points(x=1:length(pred$mean),y=(pred$mean+sdtest),pch="-")
 points(x=1:length(wls_testnorm),y=wls_testnorm,pch=1,col="blue")
 legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("blue","black"))
-# TODO: other plot result with normal distribution?
 
 # Comments : 
 #   the normalization log(1+wls) helps a lot the kriging model
@@ -212,7 +211,7 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 EGOmaxiter <- 200
 period_upd <- 5
 
-n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
+n_restart <- restartEGO(fn="./Convergence1/ego_data_gathered.RData",restart=FALSE,nbinit=nbinit)
 
 cat("\n******** START EGO \n\n",file = "ego_listen.txt")
 par(mfrow=c(1,1))
@@ -264,7 +263,7 @@ for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
   if (iter%%period_upd==0) {
     tmax <- c(5*var(norm_wls),rep(3,times=nbvar))
     tmin <- c(0.1,rep(0.08,times=nbvar))
-    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=50,maxit=500,silent=F)
+    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=25,maxit=500,silent=F)
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n")
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n",file="ego_listen.txt",append = TRUE)
     # user.stop <- readline(prompt="Enter x to exit, anything else otherwise ")
