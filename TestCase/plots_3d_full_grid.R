@@ -3,6 +3,7 @@
 # of a punctual displacements source from 3D data on a full grid of points
 #
 # The root file is 'fullgrid_xyz.csv', which is a cvs file.
+# The measured displacements come from the 'data_nonoise.mat' matlab format file.
 # Note that the number of rows and columns used to create (and lost ;-( ) 
 # in the file are nrowdata <- 1255 and ncoldata <- 1159 and 
 # the line of sight cosines are 
@@ -14,6 +15,7 @@
 
 rm(list=ls()) #  cleaning up
 
+############ load 3D full csv data file
 # dimensions associated to the file "fullgrid_xyzulos.csv"
 nrowdata <- 1255
 ncoldata <- 1159
@@ -32,18 +34,16 @@ ulos <- matrix(datacsv[,4],nrow=nrowdata)
 xvec <- data$xi[1,]
 yvec <- data$yi[,1]
 
-########### PLOTS ################
-# PLOTS on regular grid
 
-# 3D rgl plot the landscape
+###### 3D rgl plot the landscape #############
 library("rgl") # library for plots
-#open3d()
 # associate ulos to a matrix of colours
 nbcol<-512
 uloscol <- floor((ulos-min(ulos))/(max(ulos)-min(ulos))*(nbcol-1)+1)
 # uloscol <- floor((data$zi-min(data$zi))/(max(data$zi)-min(data$zi))*(nbcol-1)+1) # colours representing elevation
 colorlut <- rainbow(nbcol) # ulos color lookup table
 zcol <- colorlut[t(uloscol)]
+# par3d(cex=2.0)
 surface3d(xvec, yvec, t(data$zi), color=zcol)
 # title3d(nameoffun, col="blue", font=4)
 # decorate3d()
@@ -56,12 +56,47 @@ M = t(matrix(c(m1,m2),nrow=3))
 # rgl.lines(x=M)
 lines3d(x=M,col=c("black"),lwd=2)
 text3d(((m1+m2)/2+1000*c(1,1,1)),texts = "LOS",cex=2)
-rgl.snapshot("./fileofplot.png", fmt="png", top=T)
+title3d(main = "target u_los projected on terrain")
+# rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
-# contour plots of displacements
-# par(mfrow=c(1,1))
+###### contour plot with added location of measures #####
+nbcol<-128
+uloscol <- floor((ulos-min(ulos))/(max(ulos)-min(ulos))*(nbcol-1)+1)
+colorlut <- rainbow(nbcol) # ulos color lookup table
+zcol <- colorlut[t(uloscol)]
 # png(filename="./contour.png")
-image(xvec,yvec,t(ulos),xlab="x",ylab="y")
-contour(xvec,yvec,t(ulos),add=TRUE,nlevels=20)
-title("Displ. projected on LOS")
+image(xvec,yvec,t(ulos),xlab="x",ylab="y",col=zcol)
+zlevels <- c(-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.05,0.1,0.12)
+contour(xvec,yvec,t(ulos),add=TRUE,levels=zlevels)
+title("Target displ. projected on LOS")
+# where are the points used in the residu taken
+library(R.matlab)
+data_m <- readMat('data_nonoise.mat') # TODO: do a read from cvs version (rodo)
+meas_xi <- as.matrix(data_m$locdata[,1])
+meas_yi <- as.matrix(data_m$locdata[,2])
+meas_zi <- as.matrix(data_m$locdata[,3])
+meas_ulos <- as.matrix(data_m$locdata[,4])
+points(x=meas_xi,y=meas_yi)
 # dev.off()
+
+####### compare target with another set of variables
+source(file = './mogi_3D.R')
+newU <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,datacsv[,1],datacsv[,2],datacsv[,3])
+# project along los
+newulos <- nlos[1]*newU$x+nlos[2]*newU$y+nlos[3]*newU$z
+newulos <- matrix(newulos,nrow=nrowdata)
+# do the contour plot
+# png(filename="./contour.png")
+image(xvec,yvec,t(newulos),xlab="x",ylab="y")
+contour(xvec,yvec,t(newulos),add=TRUE,nlevels=20)
+title("trial displ. projected on LOS")
+points(x=meas_xi,y=meas_yi)
+# dev.off()
+
+
+# # calculate weighted least squares
+# #   and first the cova
+# wls <- t((newulos-datacvs[,4]))%*%Glb_CXinv%*%(newulos-datacvs[,4])
+
+
+# par(mfrow=c(1,1))
