@@ -59,38 +59,45 @@ text3d(((m1+m2)/2+1000*c(1,1,1)),texts = "LOS",cex=2)
 title3d(main = "target u_los projected on terrain")
 # rgl.snapshot("./fileofplot.png", fmt="png", top=T)
 
+
+
 ###### contour plot with added location of measures #####
-nbcol<-128
-uloscol <- floor((ulos-min(ulos))/(max(ulos)-min(ulos))*(nbcol-1)+1)
-colorlut <- rainbow(nbcol) # ulos color lookup table
-zcol <- colorlut[t(uloscol)]
-# png(filename="./contour.png")
-image(xvec,yvec,t(ulos),xlab="x",ylab="y",col=zcol)
-zlevels <- c(-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.05,0.1,0.12)
-contour(xvec,yvec,t(ulos),add=TRUE,levels=zlevels)
-title("Target displ. projected on LOS")
+## first load data related to measured locations
 # where are the points used in the residu taken
 library(R.matlab)
+source("../labSessions/kernels.R")
 data_m <- readMat('data_nonoise.mat') # TODO: do a read from cvs version (rodo)
 meas_xi <- as.matrix(data_m$locdata[,1])
 meas_yi <- as.matrix(data_m$locdata[,2])
 meas_zi <- as.matrix(data_m$locdata[,3])
 meas_ulos <- as.matrix(data_m$locdata[,4])
+Xdata <- data_m$locdata[,1:2] # z's are not accounted for in Xdata
+CXinv <- solve(kExp(Xdata,Xdata,c(5e-4,850,850)))
+
+# png(filename="./contour.png")
+par(mfrow=c(1,2))
+image(xvec,yvec,t(ulos),xlab="x",ylab="y",col=zcol)
+zlevels <- c(-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.05,0.1,0.12)
+zlevcol <- rainbow(length(zlevels)-1)
+contour(xvec,yvec,t(ulos),add=TRUE,levels=zlevels,col=zlevcol)
 points(x=meas_xi,y=meas_yi)
-# dev.off()
+wls_target <- t((meas_ulos-meas_ulos))%*%CXinv%*%(meas_ulos-meas_ulos) # kinda dumb yet doing it
+title(paste("Target , WLS=",wls_target))
+
+
 
 ####### compare target with another set of variables
 source(file = './mogi_3D.R')
 newU <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,datacsv[,1],datacsv[,2],datacsv[,3])
-# project along los
 newulos <- nlos[1]*newU$x+nlos[2]*newU$y+nlos[3]*newU$z
 newulos <- matrix(newulos,nrow=nrowdata)
-# do the contour plot
-# png(filename="./contour.png")
-image(xvec,yvec,t(newulos),xlab="x",ylab="y")
-contour(xvec,yvec,t(newulos),add=TRUE,nlevels=20)
-title("trial displ. projected on LOS")
+Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,meas_xi,meas_yi,meas_zi)
+uloscal <- nlos[1]*Ucalc$x+nlos[2]*Ucalc$y+nlos[3]*Ucalc$z
+wls <- t((uloscal-meas_ulos))%*%CXinv%*%(uloscal-meas_ulos) 
+image(xvec,yvec,t(newulos),xlab="x",ylab="y",col=zcol)
+contour(xvec,yvec,t(newulos),add=TRUE,levels=zlevels,col=zlevcol)
 points(x=meas_xi,y=meas_yi)
+title(paste("Trial , WLS=",wls_target))
 # dev.off()
 
 
@@ -99,4 +106,3 @@ points(x=meas_xi,y=meas_yi)
 # wls <- t((newulos-datacvs[,4]))%*%Glb_CXinv%*%(newulos-datacvs[,4])
 
 
-# par(mfrow=c(1,1))
