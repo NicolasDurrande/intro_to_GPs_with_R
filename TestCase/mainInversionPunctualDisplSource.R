@@ -15,6 +15,7 @@
 rm(list=ls()) #  cleaning up
 
 library(R.matlab)
+library(MASS)
 source("./mogi_3D.R")
 source("./wls_ulos.R")
 source("./restartEGO.R")

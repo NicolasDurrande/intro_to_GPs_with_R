@@ -206,8 +206,25 @@ but the context should allow understanding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-A breadcrumb example: \textbf{identification of a spherical magma reservoir} from measured displacements 
-along a satellite line of sight.
+Two breadcrumb examples related to the \textbf{identification of a spherical magma reservoir from measured displacements } along a satellite line of sight:
+\vskip\baselineskip
+\begin{minipage}[b]{0.45\textwidth}
+\begin{enumerate}
+\item the processing of surface measures for \textit{i)} reconstructing missing measures and \textit{ii)} denoising,
+\item minimizing the missfit between a Mogi model of a spherical reservoir and the surface measures.
+\end{enumerate}
+\hspace{0.4cm}
+\end{minipage} 
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{1_stat_models/figures/contour_ulos}
+\end{center}
+\end{minipage} 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\textbf{Misfit minimization problem}:
 \begin{equation*}
 \begin{split}
 & \min_{x \in [x^L,x^U] \subset \mathds{R}^d} f(x) \quad \text{ where the misfit is}\\
