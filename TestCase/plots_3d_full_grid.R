@@ -97,7 +97,7 @@ wls <- t((uloscal-meas_ulos))%*%CXinv%*%(uloscal-meas_ulos)
 image(xvec,yvec,t(newulos),xlab="x",ylab="y",col=zcol)
 contour(xvec,yvec,t(newulos),add=TRUE,levels=zlevels,col=zlevcol)
 points(x=meas_xi,y=meas_yi)
-title(paste("Trial , WLS=",wls_target))
+title(paste("Trial , WLS=",format(wls,digits=5,scientific = T)))
 # dev.off()
 
 

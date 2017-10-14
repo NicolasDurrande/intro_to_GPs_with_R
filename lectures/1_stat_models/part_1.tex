@@ -209,17 +209,15 @@ but the context should allow understanding)}
 Two breadcrumb examples related to the \textbf{identification of a spherical magma reservoir from measured displacements } along a satellite line of sight:
 \vskip\baselineskip
 \begin{minipage}[b]{0.45\textwidth}
-\begin{enumerate}
-\item the processing of surface measures for \textit{i)} reconstructing missing measures and \textit{ii)} denoising,
-\item minimizing the missfit between a Mogi model of a spherical reservoir and the surface measures.
-\end{enumerate}
+{\color{blue}1)} the processing of surface measures for \textit{i)} reconstructing missing measures and \textit{ii)} denoising,
+\end{minipage} 
 \hspace{0.4cm}
-\end{minipage} 
 \begin{minipage}[b]{0.45\textwidth}
+{\color{blue}2)} minimizing the missfit between a Mogi model of a spherical reservoir and the surface measures.
+\end{minipage}
 \begin{center}
-\includegraphics[width=\textwidth]{1_stat_models/figures/contour_ulos}
+\includegraphics[width=0.7\textwidth]{1_stat_models/figures/piton_ulos_2}
 \end{center}
-\end{minipage} 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,6 +235,19 @@ Two breadcrumb examples related to the \textbf{identification of a spherical mag
 \item $x$: identification variables, the coordinates, radius and overpressure of a spherical magma reservoir, $x = \{xs,ys,zs,a,p\}$, resp.
 \item $C$: $m \times m$ covariance matrix of the measures.
 \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\textbf{Misfit minimization problem}: \\
+$\Rightarrow$ demo with \texttt{plots\_3d\_full\_grid.R}
+\begin{center}
+\includegraphics[width=0.6\textwidth,height=0.6\textheight]{1_stat_models/figures/contour_ulos_compare}
+\end{center}
+{\tiny The bullets are the $m=220$ measure locations (under-sampled from the full grid with the quadtree method). \\ 
+target reservoir (left): $xs= 367000$, $ys= 7650300$, $zs=0$ (UTM $m$), $a=500~m$, $p=20~MPa$.\\
+trial reservoir (right): $xs= 365000$, $ys= 7649800$, $zs=-2000$ (UTM $m$), $a=500~m$, $p=300~MPa$.\\
+}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

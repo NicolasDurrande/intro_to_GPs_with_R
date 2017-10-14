@@ -33,10 +33,10 @@ nbvar <- 5
 
 # optimum
 xstar <- NA
-xstar[n2i$xs] <- 367000 # X location of source in UTM coordinates
-xstar[n2i$ys] <- 7650300 # Y location of source in UTM
-xstar[n2i$zs] <- 0 # Elevation of source with respect to sea level
-xstar[n2i$a] <- 500 # source radius
+xstar[n2i$xs] <- 367000 # X location of source in m UTM coordinates
+xstar[n2i$ys] <- 7650300 # Y location of source in m UTM
+xstar[n2i$zs] <- 0 # Elevation of source with respect to sea level in m
+xstar[n2i$a] <- 500 # source radius in m
 xstar[n2i$p] <- 20 # Source overpressure in MPa
 
 # order of magnitude of the variables 
