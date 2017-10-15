@@ -209,7 +209,7 @@ legend(x = "topright",legend = c("test","pred +/- std"),pch = c(1,3),col = c("bl
 ######### model identification ########
 #         = EGO algorithm to optimize (minimize) the model-target WLS distance
 
-EGOmaxiter <- 200
+EGOmaxiter <- 100
 period_upd <- 5
 
 n_restart <- restartEGO(fn="./Convergence2/ego_data_gathered.RData",restart=TRUE,nbinit=nbinit)
@@ -220,18 +220,18 @@ uxlim <- dim(Xnorm)[1]+EGOmaxiter
 ytarget <- -mean_wls/std_wls
 yrange <- max(norm_wls)-min(norm_wls)
 plot(x = 1:nbinit,y=norm_wls[1:nbinit],xlab="point number",ylab="norm. WLS",xlim=c(1,uxlim),
-     ylim=c(ytarget-0.2*yrange,max(norm_wls)+0.2*yrange),type="l")
+     ylim=c(ytarget-0.1*yrange,max(norm_wls)+0.1*yrange),type="l")
 if (n_restart>0) {
   lines(x=(nbinit+1):(nbinit+n_restart),y=norm_wls[(nbinit+1):(nbinit+n_restart)],col="blue")
 }
-lines(x=c(1,uxlim),y=c(ytarget,ytarget),lty="dotted",col="red")
-text(x=1,y=ytarget+0.1,labels = "ideal",cex = 0.8,col = "red",pos=4)
+# lines(x=c(1,uxlim),y=c(ytarget,ytarget),lty="dotted",col="red")
+# text(x=1,y=ytarget+0.1,labels = "ideal",cex = 0.8,col = "red",pos=4)
 
 for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
 
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
-  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,xmin=0,xmax=1,nbtry=50,maxit=100,silent=F) 
+  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,xmin=0,xmax=1,nbtry=25,maxit=100,silent=F) 
 
   # calculate function at new point
   newX <- unnorm_var(Xnorm = oEI$var)
@@ -263,8 +263,8 @@ for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
   # update the kriging model every period_upd
   if (iter%%period_upd==0) {
     tmax <- c(5*var(norm_wls),rep(3,times=nbvar))
-    tmin <- c(0.1,rep(0.1,times=nbvar))
-    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=15,maxit=500,silent=F)
+    tmin <- c(0.1,rep(0.3,times=nbvar))
+    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=10,maxit=250,silent=F)
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n")
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n",file="ego_listen.txt",append = TRUE)
     # user.stop <- readline(prompt="Enter x to exit, anything else otherwise ")
