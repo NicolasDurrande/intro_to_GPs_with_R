@@ -33,7 +33,7 @@ In the GPR context, we often have only \textbf{one observation} of the vector $F
 \end{equation*}
 It is thus possible to maximise $L$ -- or $\log(L)$ -- with respect to the kernel's parameters in order to find a well suited prior.\\
 \vspace{5mm}
-$\Rightarrow$ R demo
+\alert{$\Rightarrow$ R demo}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,7 +190,7 @@ Let's try to predict the concentration for the next 20 years.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Sum of kernels over the same space }
 We first consider a squared-exponential kernel:
-$$ \displaystyle k(x,y) = \sigma^2\exp \left(-\frac{(x-y)^2}{\theta^2} \right)$$
+$$ \displaystyle k_{se}(x,y) = \sigma^2\exp \left(-\frac{(x-y)^2}{\theta^2} \right)$$
 \begin{center}
 \includegraphics[height=3.7cm]{3_gaussian_process_regression/figures/python/CO2-rbfa} \quad \includegraphics[height=3.7cm]{3_gaussian_process_regression/figures/python/CO2-rbfb}
 \end{center}
@@ -204,7 +204,7 @@ $$ \displaystyle k(x,y) = \sigma^2\exp \left(-\frac{(x-y)^2}{\theta^2} \right)$$
 \begin{frame}{Sum of kernels over the same space }
 What happen if we sum both kernels?
 \begin{equation*}
-k(x,y) = k_{rbf1}(x,y) + k_{rbf2}(x,y)
+k(x,y) = k_{se1}(x,y) + k_{se2}(x,y)
 \end{equation*}
 \pause
 \begin{center}
@@ -221,7 +221,7 @@ k(x,y) = k_{rbf1}(x,y) + k_{rbf2}(x,y)
 \begin{frame}{Sum of kernels over the same space }
 We can try the following kernel:
 \begin{equation*}
-k(x,y) = \sigma_0^2  x^2 y^2 + k_{rbf1}(x,y) + k_{rbf2}(x,y) + k_{per}(x,y)
+k(x,y) = \sigma_0^2  x^2 y^2 + k_{se1}(x,y) + k_{se2}(x,y) + k_{per}(x,y)
 \end{equation*}
 \pause
 \begin{center}
@@ -412,7 +412,17 @@ Sample paths
 \end{column}
 \end{columns}
 \end{example}
-$\Rightarrow$ R demo
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\begin{exampleblock}{Example}
+\begin{center}
+\includegraphics[height=4cm]{1_stat_models/figures/piton_fournaise_5dike_intrusions_98_00} 
+\end{center}
+\end{exampleblock}
+\alert{$\Rightarrow$ R demo}
 \end{frame}
 
 

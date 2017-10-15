@@ -329,7 +329,7 @@ f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{d/2} |\Sigma|^{1/2}} \exp \left(-\frac1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 \begin{exampleblock}{Samples from a multivariate normal}
- \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_gaussvec2} \quad \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_gaussvec1}
+ \includegraphics[height=4.5cm]{1_stat_models/figures/R/MVN_gaussvec2} \qquad \qquad \includegraphics[height=4.5cm]{1_stat_models/figures/R/MVN_gaussvec1}
 \end{exampleblock}
 \vspace{-5mm}
 \begin{exampleblock}{Exercise}
@@ -338,6 +338,7 @@ f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{d/2} |\Sigma|^{1/2}} \exp \left(-\frac1
   \item For a given covariance matrix $K$ and independant $\mathcal{N}(0,1)$ samples, how can we generate $\mathcal{N}(\mu,K)$ random samples?
 \end{itemize}
 \end{exampleblock}
+\alert{$\Rightarrow$ R demo}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -407,7 +408,24 @@ The distribution of a GP is fully characterised by:
 	\item its mean function $m$ defined over $D$
 	\item its covariance function (or kernel) $k$ defined over $D \times D$: $k(x,y) = \Cov(Z(x),Z(y))$
 \end{itemize}
-We will use the notation $Z \sim \mathcal{N}(m(.),k(.,.))$.
+We will use the notation $Z \sim \mathcal{N}(m(.),k(.,.))$.\\
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+Let's look at the sample paths of a Gaussian Process!\\
+\vspace{2mm}
+\alert{$\Rightarrow$ Shiny App:} \url{https://github.com/NicolasDurrande/shinyApps} \\
+\vspace{5mm}
+In order to simulate sample paths from a GP $Z \sim \mathcal{N}(m(.),k(.,.))$, we consider the samples discretised on a fine grid.
+\vspace{5mm}
+\begin{exampleblock}{Exercise: Simulating sample paths}
+Let X be a set 100 regularly spaced points over the input space of $Z$.
+\begin{itemize}
+	\item What is the distribution of $Z(X)$ ?
+	\item How to simulate samples from $Z(X)$ ?
+\end{itemize}
+\end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -457,44 +475,27 @@ There are a lot of functions that have already been proven psd:\\
 %%\end{tabular}\\
 \vspace{2mm}
 \normalsize
-When $k$ is a function of $x-y$, the kernel is called \textbf{stationary}. \\
-The parameter $\sigma^2$ is called the \textbf{variance} and $\theta$ the \textbf{length-scale}.
+The parameter $\sigma^2$ is called the \textbf{variance} and $\theta$ the \textbf{length-scale}.\\
+\alert{$\Rightarrow$ Shiny App}
 \end{frame}
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}{}
+%% In higher dimension one can introduce one length-scale parameter per dimension. The usual Euclidean distance between two points $|| x-y || = ( \sum (x_i-y_i)^2)^{1/2}$ is thus replaced by
+%% \begin{equation*}
+%% 	\Ni{x-y}{\theta} = \left( \sum_{i=1}^d \frac{(x_i-y_i)^2}{\theta_i^2} \right)^{1/2}.
+%% \end{equation*}
+%% If the parameters $\theta_i$ are equal for all the dimensions, the covariance (or the process) is called \textbf{isotropic}.\\
+%% \vspace{5mm}
+%% \alert{$\Rightarrow$ R demo}
+%% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-Can we look at the sample paths associated to these kernels?\\
-\vspace{5mm}
-In order to simulate sample paths from a GP $Z \sim \mathcal{N}(m(.),k(.,.))$, we will consider samples of the GP discretised on a fine grid.
-\vspace{5mm}
-\begin{exampleblock}{Exercise: Simulating sample paths}
-Let X be a set 100 regularly spaced points over the input space of $Z$.
-\begin{itemize}
-	\item What is the distribution of $Z(X)$ ?
-	\item How to simulate samples from $Z(X)$ ?
-\end{itemize}
-\end{exampleblock}
-\vspace{5mm}
-$\Rightarrow$ Shiny App: \url{https://github.com/NicolasDurrande/shinyApps}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-In higher dimension one can introduce one length-scale parameter per dimension. The usual Euclidean distance between two points $|| x-y || = ( \sum (x_i-y_i)^2)^{1/2}$ is thus replaced by
-\begin{equation*}
-	\Ni{x-y}{\theta} = \left( \sum_{i=1}^d \frac{(x_i-y_i)^2}{\theta_i^2} \right)^{1/2}.
-\end{equation*}
-If the parameters $\theta_i$ are equal for all the dimensions, the covariance (or the process) is called \textbf{isotropic}.\\
-\vspace{5mm}
-$\Rightarrow$ R demo
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Here is a list of the most common kernels:\\
+Here is a list of the most common kernels in higher dimension:\\
 \vspace{2mm}
 \footnotesize
-\centering
+% \centering
 \begin{tabular}{rlN}
 		constant & $ \displaystyle k(x,y) = \sigma^2 $ &\\[4mm]
 		white noise & $ \displaystyle k(x,y) = \sigma^2 \delta_{x,y} $ &\\[4mm]
@@ -503,6 +504,11 @@ Here is a list of the most common kernels:\\
 		Matern 5/2 & $\displaystyle k(x,y) = \sigma^2 \left(1 + \sqrt{5}\Ni{x-y}{\theta} + \frac{5}{3}\Ni{x-y}{\theta}^2 \right) \exp \left(- \sqrt{5}\Ni{x-y}{\theta} \right)$ &\\[4mm]
 		Gaussian & $\displaystyle k(x,y) = \sigma^2 \exp \left(- \frac12 \Ni{x-y}{\theta}^2 \right)$ &\\[4mm]
 \end{tabular}
+\normalsize where
+\begin{equation*}
+	\Ni{x-y}{\theta} = \left( \sum_{i=1}^d \frac{(x_i-y_i)^2}{\theta_i^2} \right)^{1/2}.
+\end{equation*}
+\alert{$\Rightarrow$ R demo}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -593,7 +599,7 @@ This is because changing the kernel means changing the prior on $f$\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-There is no model/kernel that is intrinsically better... it depends on the data!
+There is no kernel that is intrinsically better... it depends on data!
 \begin{center}
 \includegraphics[height=3.5cm]{1_stat_models/figures/Fig2-GP-rbf} \hspace{1cm}
 \includegraphics[height=3.5cm]{1_stat_models/figures/Fig2-GP-exp}
@@ -604,6 +610,17 @@ The kernel has to be chosen accordingly to our prior belief on the behaviour of 
   \item is it stationary ?
   \item ...
 \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\begin{exampleblock}{Example}
+Let's recreate the map of displacements using a subset of the data    
+\begin{center}
+\includegraphics[height=4cm]{1_stat_models/figures/piton_ulos_2}
+\end{center}
+\end{exampleblock}
+\alert{$\Rightarrow$ R demo}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -631,6 +648,5 @@ Examples of models with observation noise for $n(x,y)=\tau^2 \delta_{x,y}$:
 \includegraphics[height=3.5cm]{1_stat_models/figures/R/ch34_GPRnoise01}\\
 The values of $\tau^2$ are respectively 0.001, 0.01 and 0.1.
 \end{center}
-$\Rightarrow$ R demo
 \end{frame}
 
