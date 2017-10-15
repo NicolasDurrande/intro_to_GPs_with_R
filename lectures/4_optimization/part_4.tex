@@ -234,6 +234,60 @@ This algorithm is called \textbf{Efficient Global Optimization} (EGO, Jones et a
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
+\begin{exampleblock}{Example: surface displacements misfit minimization}
+$\Rightarrow$ demo with \texttt{mainInversionPunctualDisplSource.R}\\
+!!! normalize the data: WLS has a few very large values, it is always $>0$: make it more gaussian, 
+$\mathtt{wls}\_norm = \log(1+\mathtt{wls})$ and all $x$'s and $\mathtt{wls}\_norm$ between 0 and 1.
+\begin{minipage}[c]{0.6\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{4_optimization/figures/misfit_learn_set} 
+\end{center}
+\end{minipage}
+\begin{minipage}[c]{0.37\textwidth}
+{\tiny 100 $\{xs,ys,zs,a,p\}$ points chosen through an optimized Latin Hypercube Sampling 
+(\texttt{R} libraries \texttt{DiceDesign} or \texttt{lhs}).}\\
+\end{minipage}
+\end{exampleblock}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\begin{center}
+\includegraphics[width=0.7\textwidth]{4_optimization/figures/misfit_test_set} 
+\end{center}
+{\tiny 110 random $\{xs,ys,zs,a,p\}$ test points.}\\
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\begin{center}
+\includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+{\tiny (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)}
+\\
+EGO parameters: anisotropic Mat\`ern 5/2 kernel, GP updated (log-likelihood maximized) every 5 added points,
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\begin{center}
+\includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
 \begin{exampleblock}{Difficulties and challenges with EGO}
 \begin{itemize}
 \item Standard GPs are limited to $n \approx 1000$ points (covariance matrix inversion).
