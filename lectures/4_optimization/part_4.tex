@@ -150,7 +150,7 @@ Can we find another criterion?
 \textbf{Expected Improvement:}
 \begin{equation*}
 \begin{split}
-E&I(x) =  \int_{-\infty}^{\min(F)} \max\left(0,Y(x)\right) ~dY(x) = \dots = \\
+E&I(x) =  \int_{-\infty}^{\min(F)} \max\left(0,Y(x)\right) ~dy(x) = \dots = \\
 & \sqrt{c(x,x)} (u(x) cdf(u(x)) + pdf(u(x))) \quad \text{ with } u(x) = \frac{\min(F) - m(x)}{\sqrt{(c(x,x))}}
 \end{split}
 \end{equation*}
@@ -359,60 +359,84 @@ $\Rightarrow$ these are the topics of current research. Let's mention a few exte
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-One way to improve the conditioning of the covariance matrix is to replace two values that are close-by by one function value and one derivative:
-\begin{center}
-  \begin{tabular}{ccc}
-\includegraphics[height=4cm]{4_optimization/figures/python/osborn0} &
-\includegraphics[height=4cm]{4_optimization/figures/Rightarrow} &
-\includegraphics[height=4cm]{4_optimization/figures/python/osborn1} \\
-Cond. = 3842 & & Cond. = 10
-  \end{tabular}
-\end{center}
-This can be generalised to higher orders \alert{$\rightarrow$} Taylor expansion\\
-\small see articles from M. Osborn
+\begin{exampleblock}{EGO continuations}
+\begin{itemize}
+\item Parallelized EGO: estimate the $EI$ of groups of points, cf. Ginsbourger et al. 
+\item Finite budget: $EI$ of a single $x$ is only optimal at the last iteration. Theory of dynamic $EI$, cf. Ginsbourger et al.
+\item EGO and bad covariance matrix conditioning: replace points that are close-by by one point and the associated derivatives (cf. M. Osborn, L. Laurent), regularizations (cf. Le Riche et al.)
+\item SUR strategies: (Step-wise Uncertainty Reduction), reduce the entropy of the optimum (cf. Vasquez et al.), or the average probability of incursions below $min(F)$ (cf. Picheny).
+\end{itemize}
+\end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-If we know the computational budget in advance, adding new points at the \textbf{best one step ahead location} is not optimal.\\
-\vspace{5mm}
-Some improvements have been made toward this
+\begin{exampleblock}{Related problems addressed with GPs}
 \begin{itemize}
-	\item Batch EGO
-	\item Parallelization of the algorithm
+\item EGO with constraints: $\min_x f(x) \text{ s.t. } g(x) \le 0$, multiply the $EI$ by the probability of constraints satisfaction.
+\item GP for target attainment: find the set of $x$ s.t. $f(x) = T$, change the $EI$ into $c(x,x) \times \text{pdf}\left((T-m(x))/sqrt(c(x,x))\right)$, cf. Picheny et al.
+\item GP for probability estimation: find $\mathds P (f(x,U)\le T) $ where $U$ is a random vector.
+\item GP for multi-objective optimization: $\min_x \{f_1(x), \dots f_m(x)\}$, cf. Binois et al.
 \end{itemize}
-\vspace{5mm}
-\small see works from D. Ginsbourger
+\end{exampleblock}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%One way to improve the conditioning of the covariance matrix is to replace two values that are close-by by one function value and one derivative:
+%\begin{center}
+%  \begin{tabular}{ccc}
+%\includegraphics[height=4cm]{4_optimization/figures/python/osborn0} &
+%\includegraphics[height=4cm]{4_optimization/figures/Rightarrow} &
+%\includegraphics[height=4cm]{4_optimization/figures/python/osborn1} \\
+%Cond. = 3842 & & Cond. = 10
+%  \end{tabular}
+%\end{center}
+%This can be generalised to higher orders \alert{$\rightarrow$} Taylor expansion\\
+%\small see articles from M. Osborn
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%If we know the computational budget in advance, adding new points at the \textbf{best one step ahead location} is not optimal.\\
+%\vspace{5mm}
+%Some improvements have been made toward this
+%\begin{itemize}
+%	\item Batch EGO
+%	\item Parallelization of the algorithm
+%\end{itemize}
+%\vspace{5mm}
+%\small see works from D. Ginsbourger
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section[Robust optim.]{Robust optimization}
 \subsection{}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Robust optimization may mean various things:
-\begin{itemize}
-	\item There is observation noise on the output
-	\item Some input variables are uncertain
-	\item Model is uncertain
-\end{itemize}
-\vspace{2mm}
-\begin{example}
-\begin{columns}[c]
-\column{3cm}
-	\includegraphics[height=4cm]{4_optimization/figures/RLRrobust}
-\column{5cm}
-	a +/- 1mm dispersion in the manufacturing of a car cylinder head  can degrade its performance (g CO2/km) by -20\% (worst case)\\
-\end{columns}
-\vspace{3mm}
-	\small Source: Talk from R. Le Riche at the Porquerolles Summer School, 2014
-\end{example}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%Robust optimization may mean various things:
+%\begin{itemize}
+%	\item There is observation noise on the output
+%	\item Some input variables $U$ are uncertain
+%	\item Model is uncertain, $f(x,U)$
+%\end{itemize}
+%\vspace{2mm}
+%\begin{example}
+%\begin{columns}[c]
+%\column{3cm}
+%	\includegraphics[height=4cm]{4_optimization/figures/RLRrobust}
+%\column{5cm}
+%	a +/- 1mm dispersion in the manufacturing of a car cylinder head  can degrade its performance (g CO2/km) by -20\% (worst case)\\
+%\end{columns}
+%\vspace{3mm}
+%	\small Source: Talk from R. Le Riche at the Porquerolles Summer School, 2014
+%\end{example}
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
+%\begin{frame}{}
 % \begin{example}
 % Here is a basic example:
 % \begin{center}
@@ -422,27 +446,27 @@ Robust optimization may mean various things:
 % \end{example}
 % \end{frame}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \begin{frame}[noframenumbering]{}
-\begin{example}
-Here is a basic example:
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/optim_rob_b}\\
-Which input is the best?
-\end{center}
-\end{example}
-\end{frame}
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \begin{frame}[noframenumbering]{}
+%\begin{example}
+%Here is a basic example:
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/optim_rob_b}\\
+%Which input is the best?
+%\end{center}
+%\end{example}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{}
-\begin{example}
-A non Gaussian example
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/optim_rob_c}\\
-In some cases, we may want to optimize the worst case scenario.
-\end{center}
-\end{example}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[noframenumbering]{}
+%\begin{example}
+%A non Gaussian example
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/optim_rob_c}\\
+%In some cases, we may want to optimize the worst case scenario.
+%\end{center}
+%\end{example}
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
@@ -452,7 +476,7 @@ First of all, using the current best observation as a minimum does not make much
 \vspace{5mm}
 Some solutions are
 \begin{itemize}
-	\item[S1] Build a new model that interpolates $m(X)$ at $X$.
+	\item[S1] Build a new model that interpolates $m(X)$ at $X$ where $m(X)$ accounts for the noise (non interpolating GP, e.g. with a white noise part in the kernel).
 	\item[S2] Include observation noise and replace $\min(F)$ by $\min(m(X))$ in the EI expression
 	\item[S3] Similar to 2 but consider an Expected Mean Improvement.
 \end{itemize}
@@ -464,6 +488,7 @@ iteration 0
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n0}
 \end{center}
+\tiny (observations not shown, they are over and under the black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -472,6 +497,7 @@ iteration 1
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n1}
 \end{center}
+\tiny (observations not shown, they are over and under the black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -480,6 +506,7 @@ iteration 2
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n2}
 \end{center}
+\tiny (observations not shown, they are over and under the black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -488,6 +515,7 @@ iteration 3
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n3}
 \end{center}
+\tiny (observations not shown, they are over and under the black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -496,64 +524,65 @@ iteration 4
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n4}
 \end{center}
+\tiny (observations not shown, they are over and under the black crosses)\\
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section[Related problems]{Related problems}
-\subsection{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section[Related problems]{Related problems}
+%\subsection{}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-Some related optimization problems are:
-\begin{itemize}
-	\item calibration problems
-	\item probability computations
-\end{itemize}
-\vspace{8mm}
-Some algorithms with an EGO spirit can be applied:
-\begin{itemize}
- 	\item SUR methods
- \end{itemize}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%Some related optimization problems are:
+%\begin{itemize}
+%	\item calibration problems
+%	\item probability computations
+%\end{itemize}
+%\vspace{8mm}
+%Some algorithms with an EGO spirit can be applied:
+%\begin{itemize}
+% 	\item SUR methods
+% \end{itemize}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-We want to find the input(s) such that f(x) = 3.2
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/python/inv}
-\end{center}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{}
+%We want to find the input(s) such that f(x) = 3.2
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/python/inv}
+%\end{center}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{}
-iteration 0:
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/python/invproba}
-\end{center}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[noframenumbering]{}
+%iteration 0:
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/python/invproba}
+%\end{center}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{}
-iteration 1:
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/python/invproba1}
-\end{center}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[noframenumbering]{}
+%iteration 1:
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/python/invproba1}
+%\end{center}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{}
-iteration 2:
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/python/invproba2}
-\end{center}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[noframenumbering]{}
+%iteration 2:
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/python/invproba2}
+%\end{center}
+%\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{}
-iteration 3:
-\begin{center}
-\includegraphics[height=5cm]{4_optimization/figures/python/invproba3}
-\end{center}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[noframenumbering]{}
+%iteration 3:
+%\begin{center}
+%\includegraphics[height=5cm]{4_optimization/figures/python/invproba3}
+%\end{center}
+%\end{frame}
 
