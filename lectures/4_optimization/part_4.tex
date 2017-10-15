@@ -243,8 +243,9 @@ $\mathtt{wls}\_norm = \log(1+\mathtt{wls})$ and all $x$'s and $\mathtt{wls}\_nor
 \includegraphics[width=\textwidth]{4_optimization/figures/misfit_learn_set} 
 \end{center}
 \end{minipage}
-\begin{minipage}[c]{0.37\textwidth}
-{\tiny 100 $\{xs,ys,zs,a,p\}$ points chosen through an optimized Latin Hypercube Sampling 
+\hspace{0.3cm}
+\begin{minipage}[c]{0.30\textwidth}
+{\small 100 $\{xs,ys,zs,a,p\}$ points chosen through an optimized Latin Hypercube Sampling 
 (\texttt{R} libraries \texttt{DiceDesign} or \texttt{lhs}).}\\
 \end{minipage}
 \end{exampleblock}
@@ -265,25 +266,27 @@ $\mathtt{wls}\_norm = \log(1+\mathtt{wls})$ and all $x$'s and $\mathtt{wls}\_nor
 \begin{center}
 \includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
 \end{center}
+{\tiny 110 test points.}\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-{\tiny (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)}
-\\
-EGO parameters: anisotropic Mat\`ern 5/2 kernel, GP updated (log-likelihood maximized) every 5 added points,
-
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)\\
+\small EGO parameters: anisotropic Mat\`ern 5/2 kernel, GP updated (log-likelihood maximized) every 5 added points, BFGS with bounded variables (from \texttt{optim()} function) restarted from random initial points for maximizing log-likelihood and EI.
+\begin{minipage}[c]{0.6\textwidth}
 \begin{center}
-\includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
+\includegraphics[width=\textwidth]{4_optimization/figures/misfit_EGO_conv} 
 \end{center}
+\end{minipage}
+\hspace{0.3cm}
+\begin{minipage}[c]{0.3\textwidth}
+Preferential sampling of good regions of $S$, but global therefore sometimes increasing WLS.
+\end{minipage}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 \small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
-\begin{center}
-\includegraphics[width=0.9\textwidth]{4_optimization/figures/misfit_test_set_2} 
-\end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
