@@ -222,19 +222,19 @@ This algorithm is called \textbf{Efficient Global Optimization} (EGO, Jones et a
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
-\begin{exampleblock}{Illustration for $d=6$ (Hartman)}
-	Illustration in higher dimension
-\begin{center}
-\includegraphics[height=5.5cm]{4_optimization/figures/egoHartman} \includegraphics[height=5.5cm]{4_optimization/figures/egoHartman2}
-\end{center}
-\small Source: \textit{DiceOptim}, Roustant, Ginsbourger and Deville, 2009.
-\end{exampleblock}
-\end{frame}
+%\begin{frame}{}
+%\begin{exampleblock}{Illustration for $d=6$ (Hartman)}
+%	Illustration in higher dimension
+%\begin{center}
+%\includegraphics[height=5.5cm]{4_optimization/figures/egoHartman} \includegraphics[height=5.5cm]{4_optimization/figures/egoHartman2}
+%\end{center}
+%\small Source: \textit{DiceOptim}, Roustant, Ginsbourger and Deville, 2009.
+%\end{exampleblock}
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-\begin{exampleblock}{Example: surface displacements misfit minimization}
+\begin{exampleblock}{Example in 5d: surface displacements misfit minimization}
 $\Rightarrow$ demo with \texttt{mainInversionPunctualDisplSource.R}\\
 !!! normalize the data: WLS has a few very large values, it is always $>0$: make it more gaussian, 
 $\mathtt{wls}\_norm = \log(1+\mathtt{wls})$ and all $x$'s and $\mathtt{wls}\_norm$ between 0 and 1.
@@ -281,12 +281,64 @@ $\mathtt{wls}\_norm = \log(1+\mathtt{wls})$ and all $x$'s and $\mathtt{wls}\_nor
 \hspace{0.3cm}
 \begin{minipage}[c]{0.3\textwidth}
 Preferential sampling of good regions of $S$, but global therefore sometimes increasing WLS.
+Lower bound on $\theta_i$'s increased from 0.08 to 0.1 at $t=250$ ($x_i$'s and $\theta_i$'s
+normed between 0 and 1).
 \end{minipage}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 \small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\begin{minipage}[c]{0.6\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{4_optimization/figures/pairs_X_old_new} 
+\end{center}
+\end{minipage}
+\hspace{0.3cm}
+\begin{minipage}[c]{0.3\textwidth}
+Black: LHS initial points. \\
+Blue: EGO points.\\
+\vskip\baselineskip
+Note the patterns in new points. Accumulation at lower bound of $a$ and mid interval of $p$ before $t=250$.
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\begin{minipage}[c]{0.6\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{4_optimization/figures/pairs_X_good_15percent} 
+\end{center}
+\end{minipage}
+\hspace{0.3cm}
+\begin{minipage}[c]{0.3\textwidth}
+15\% best sampled points. Note the ``function'' for the $(a,p)$ pair, i.e., $a^\star(p^\star)$.
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+\small (demo with \texttt{mainInversionPunctualDisplSource.R}, cont.)
+\mbox{ % mbox to avoid linebreak
+\begin{minipage}[c]{0.56\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{4_optimization/figures/non_identif_a_p} 
+\end{center}
+\end{minipage}
+\hspace{0.3cm}
+\begin{minipage}[c]{0.4\textwidth}
+Mogi model only dependency in $a$ and $p$ is through $a^3 \times p$: it is not identifiable. \\
+\vskip\baselineskip
+EGO tells it by preferential sampling in the valley 
+$$a^3 \times p = \text{const.} = {a^\star}^3 \times p^\star$$
+\end{minipage}
+} % end mbox
+Other EGO output: a statistical model of WLS. \\
+The last length scales are an indication of the 
+sensitivity of WLS to each variable: $a$, $p$ and $zs$ are very sensitive 
+($\theta_i$'s small, in $[0.08,0.1]$), $xs$ a little sensitive ($\theta \text{ in } [0.1,2.5]$) 
+and $ys$ insensitive ($\theta \approx 3$).
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
