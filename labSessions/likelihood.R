@@ -21,28 +21,19 @@
 #' opt_out <- optim(c(1,.2), logLikelihood, kern=kMat52, Xd=Xd, F=F, control=list(fnscale=-1))
 #' 
 #' @export
-# rodo change X into Xd as function parameter name to avoid confusion when used with apply(X=)
-logLikelihood <- function(params,kern,Xd,F,kernNoise=NULL){
+logLikelihood <- function(params, kern, Xd, F, kernNoise=NULL, num_param_noise = NULL){
+  
   if(is.null(kernNoise)){
     kXX <- kern(Xd,Xd,params) + kWhite(Xd,Xd,1e-6)
-  }else if(kernNoise==kWhite){
-    param = params[-lenght(params)]
-    paramNoise = params[lenght(params)]
-    kXX <- kern(Xd,Xd,param) + kernNoise(Xd,Xd,paramNoise)
   }else{
-    stop("the (log-)likelihood is only implemented for kernNoise=NULL and kernNoise=kWhite")    
+    if(identical(kernNoise, kWhite)) num_param_noise <- 1  
+    num_param_sig <- length(params) - num_param_noise
+    param <- params[1:num_param_sig]
+    paramNoise <- params[(num_param_sig+1):length(params)]
+    kXX <- kern(Xd,Xd,param) + kernNoise(Xd,Xd,paramNoise)
   }
-  ndata <- nrow(Xd)
-  # rodo add something on the diagonal to avoid singularity
-  #detkXX <- det(kXX)
-  #eps <- 1.e-14
-  #tau <- 1.e-14
-  #while (detkXX<eps & tau<1) {
-  #  tau <- tau*100
-  #  kXX <- kXX + tau*diag(ndata)
-  #  detkXX <- det(kXX)
-  #}
-  LL <- -1/2*ndata*log(2*pi) - 1/2*determinant(kXX)$modulus - 1/2*t(F)%*%solve(kXX)%*%F
+  
+  LL <- -1/2*nrow(Xd)*log(2*pi) - 1/2*determinant(kXX)$modulus - 1/2*t(F)%*%solve(kXX)%*%F
   return(LL)
 }
 
