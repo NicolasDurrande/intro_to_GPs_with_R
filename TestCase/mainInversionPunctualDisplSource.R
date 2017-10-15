@@ -231,7 +231,7 @@ for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
 
   cat("\n***** EGO iteration ",iter,"\n\n")
   # optimise EI
-  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,xmin=0,xmax=1,nbtry=100,maxit=100,silent=F) 
+  oEI <- maxEI(kern=kMat52,Xd=Xnorm,F=norm_wls,param=oLL$bestthetas,xmin=0,xmax=1,nbtry=50,maxit=100,silent=F) 
 
   # calculate function at new point
   newX <- unnorm_var(Xnorm = oEI$var)
@@ -263,8 +263,8 @@ for (iter in (n_restart+1):(n_restart+EGOmaxiter)){
   # update the kriging model every period_upd
   if (iter%%period_upd==0) {
     tmax <- c(5*var(norm_wls),rep(3,times=nbvar))
-    tmin <- c(0.1,rep(0.08,times=nbvar))
-    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=25,maxit=500,silent=F)
+    tmin <- c(0.1,rep(0.1,times=nbvar))
+    oLL <- maxlogLikelihood(kern=kMat52,Xd=Xnorm,F=norm_wls,tmin=tmin,tmax=tmax,nbtry=15,maxit=500,silent=F)
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n")
     cat("   max LL, new thetas=",oLL$bestthetas," with LL=",oLL$bestLL,"\n",file="ego_listen.txt",append = TRUE)
     # user.stop <- readline(prompt="Enter x to exit, anything else otherwise ")
@@ -280,7 +280,7 @@ cols[] <- "black"
 cols[nbinit+1:dim(X)[1]] <- "blue"
 pairs(X,col=cols)
 # where are the q percent good points
-qwlsn <- quantile(x=norm_wls,probs = 0.2)
+qwlsn <- quantile(x=norm_wls,probs = 0.1)
 igood <- which(norm_wls[]<qwlsn)
 pairs(X[igood,])
 # look at non invertibility

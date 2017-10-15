@@ -101,8 +101,5 @@ title(paste("Trial , WLS=",format(wls,digits=5,scientific = T)))
 # dev.off()
 
 
-# # calculate weighted least squares
-# #   and first the cova
-# wls <- t((newulos-datacvs[,4]))%*%Glb_CXinv%*%(newulos-datacvs[,4])
 
 

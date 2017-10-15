@@ -102,9 +102,9 @@ On the other hand, the model can be used to guide us in the search for the optim
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
-Global optimization methods are a trade-off between
+\textbf{Global optimization} methods are a trade-off between
 \begin{itemize}
-	\item Exploitations of good results
+	\item Exploitation of past good results
 	\item Exploration of the space
 \end{itemize}
 \vspace{3mm}
@@ -148,8 +148,13 @@ Can we find another criterion?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{}
 \textbf{Expected Improvement:}
-$$EI(x) = \sqrt{c(x,x)} (u(x) cdf(u(x)) + pdf(u(x)))$$
-\qquad with $ \displaystyle u(x) = \frac{\min(F) - m(x)}{\sqrt{(c(x,x))}}$
+\begin{equation*}
+\begin{split}
+E&I(x) =  \int_{-\infty}^{\min(F)} \max\left(0,Y(x)\right) ~dY(x) = \dots = \\
+& \sqrt{c(x,x)} (u(x) cdf(u(x)) + pdf(u(x))) \quad \text{ with } u(x) = \frac{\min(F) - m(x)}{\sqrt{(c(x,x))}}
+\end{split}
+\end{equation*}
+%\qquad with $ \displaystyle u(x) = \frac{\min(F) - m(x)}{\sqrt{(c(x,x))}}$
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI0}
 \end{center}
@@ -196,30 +201,51 @@ Let's see how it works... iteration 5
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{}
+\begin{frame}{Expected Improvement}
+This algorithm is called \textbf{Efficient Global Optimization} (EGO, Jones et al., 1998):
+\begin{enumerate}
+	\item make an initial design of experiments $X$ and calculate the associated $F$, $t = \mathtt{length}(F)$
+	\item built a GP from $(X,F)$ (max. log-likelihood on $\sigma$ and $\theta_i$'s)
+	\item $X_{t+1}= \arg \max_x EI(x)$
+	\item calculate $F_{t+1}=f(X_{t+1})$, increment $t$
+	\item stop ($t>t^\text{max}$) or go to {\color{blue}2.}
+\end{enumerate}
+\vspace{5mm}
+\begin{itemize}
+	\item[+] EGO provides a good trade-off between exploitation and exploration without arbitrary parameters.
+	\item[+] It requires few function observations (10 in the example) to get close to optimal regions.
+\end{itemize}
+%\begin{example}
+%From the previous 5 iterations, we obtain $1.44e39$ for the conditioning of the covariance matrix. Eigenvalues are
+%$$ (67.70,\  24.86,\  5.13,\  1.68,\  0.45,\  0.16,\  0.01,\  0.00,\  0.00,\ 0.00) $$
+%\end{example}
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
 \begin{exampleblock}{Illustration for $d=6$ (Hartman)}
 	Illustration in higher dimension
 \begin{center}
 \includegraphics[height=5.5cm]{4_optimization/figures/egoHartman} \includegraphics[height=5.5cm]{4_optimization/figures/egoHartman2}
 \end{center}
-\small Source: DiceOptim, D. Ginsbourger, 2009.
+\small Source: \textit{DiceOptim}, Roustant, Ginsbourger and Deville, 2009.
 \end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Expected Improvement}
-This algorithm is called \textbf{Efficient Global Optimization} (EGO). It is famous since a paper of Jones et Al in 1998.\\
-\vspace{5mm}
+\begin{frame}{}
+\begin{exampleblock}{Difficulties and challenges with EGO}
 \begin{itemize}
-	\item[+] EGO provides a good trade-off between exploitation and exploration.
-	\item[+] It only requires a few function observations (10 in the example)
+\item Standard GPs are limited to $n \approx 1000$ points (covariance matrix inversion).
+\item EGO clusters points in good regions, the covariance matrix may become ill-conditionned 
+if length scales $\theta_i$ are too small.
+\item Although the method perfectly applies to large dimensional spaces ($d>100$), larger $d$ 
+may require larger $n$, back 2 lines above.
+\item EGO does not converge in the traditional sense: it creates dense samples in the volume of $S$. 
+The efficiency comes from the order in which points are sampled.
 \end{itemize}
-One issue is that we may have a model with observations very close one from each other\\
-\begin{example}
-From the previous 5 iterations, we obtain $1.44e39$ for the conditioning of the covariance matrix. Eigenvalues are
-$$ (67.70,\  24.86,\  5.13,\  1.68,\  0.45,\  0.16,\  0.01,\  0.00,\  0.00,\ 0.00) $$
-\end{example}
+$\Rightarrow$ these are the topics of current research. Let's mention a few extensions next.
+\end{exampleblock}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
