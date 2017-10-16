@@ -33,7 +33,17 @@ data$zi <- matrix(datacsv[,3],nrow=nrowdata)
 ulos <- matrix(datacsv[,4],nrow=nrowdata)
 xvec <- data$xi[1,]
 yvec <- data$yi[,1]
-
+# 
+n2i <- list(xs=1, ys=2, zs=3, a=4, p=5) # name to index for variables
+varnames <- c("xs","ys","zs","a","p")
+nbvar <- 5
+# optimum
+xstar <- NA
+xstar[n2i$xs] <- 367000 # X location of source in m UTM coordinates
+xstar[n2i$ys] <- 7650300 # Y location of source in m UTM
+xstar[n2i$zs] <- 0 # Elevation of source with respect to sea level in m
+xstar[n2i$a] <- 500 # source radius in m
+xstar[n2i$p] <- 20 # Source overpressure in MPa
 
 ###### 3D rgl plot the landscape #############
 library("rgl") # library for plots
@@ -88,10 +98,23 @@ title(paste("Target , WLS=",wls_target))
 
 ####### compare target with another set of variables
 source(file = './mogi_3D.R')
+#  the trial solution from the slides
 newU <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,datacsv[,1],datacsv[,2],datacsv[,3])
+# a good solution
+xsol1 <- c(366718.1,7650725,-1550.548,894.3784,5.632471)
+# newU <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],datacsv[,1],datacsv[,2],datacsv[,3])
+# as a check, the optimum
+# newU <- mogi_3D(G= 2000,nu=0.25,xs=xstar[1],ys=xstar[2],zs=xstar[3],a=xstar[4],p=xstar[5],datacsv[,1],datacsv[,2],datacsv[,3])
+#
 newulos <- nlos[1]*newU$x+nlos[2]*newU$y+nlos[3]*newU$z
 newulos <- matrix(newulos,nrow=nrowdata)
+# trial solution
 Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,meas_xi,meas_yi,meas_zi)
+# good solution 1
+# Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],meas_xi,meas_yi,meas_zi)
+# as a check, the optimum
+# Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=xstar[1],ys=xstar[2],zs=xstar[3],a=xstar[4],p=xstar[5],meas_xi,meas_yi,meas_zi)
+#
 uloscal <- nlos[1]*Ucalc$x+nlos[2]*Ucalc$y+nlos[3]*Ucalc$z
 wls <- t((uloscal-meas_ulos))%*%CXinv%*%(uloscal-meas_ulos) 
 image(xvec,yvec,t(newulos),xlab="x",ylab="y",col=zcol)
