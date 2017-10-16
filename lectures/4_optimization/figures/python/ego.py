@@ -27,7 +27,7 @@ kern = GPy.kern.Matern52(input_dim=d,variance=10,lengthscale=.4)
 # define a model
 m = GPy.models.gp_regression.GPRegression(X, F, kern)
 m['.*noise'].fix(tau2)		# fix the noise variance
-print m
+print(m)
 
 m.plot(plot_limits=[0,1])
 #pb.savefig('ego_0.pdf',bbox_inches='tight')
@@ -59,7 +59,7 @@ def EI(x,m):
 	return(ei)
 
 x = np.linspace(0,1,100)[:,None]  
-ei = EI(x)
+ei = EI(x,m)
 
 m.plot(plot_limits=[0,1])
 pb.plot([0,1],[np.min(F)]*2,'k--',linewidth=1.5)
