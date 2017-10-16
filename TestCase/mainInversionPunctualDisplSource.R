@@ -141,7 +141,7 @@ text(x = 0.5, y = 0.5, paste("LEARNING\n","SET"), cex = 1.6, col = "black")
 
 # optimize the model parameters by repeating local searches started from random initial points
 
-nbtry <- 0 # make it <1 to skip max LL and take a past, a priori theta
+nbtry <- 5 # make it <1 to skip max LL and take a past, a priori theta
 if (nbtry<1){
   # Past results with non-logged outputs
   # oLL$bestthetas <- c(2.0680115 , 7.8302747 ,11.0337919 , 0.1464954 , 0.2639607 , 0.3328377) # LL=-99.12137

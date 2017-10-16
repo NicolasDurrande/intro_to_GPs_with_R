@@ -98,22 +98,14 @@ title(paste("Target , WLS=",wls_target))
 
 ####### compare target with another set of variables
 source(file = './mogi_3D.R')
-#  the trial solution from the slides
-newU <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,datacsv[,1],datacsv[,2],datacsv[,3])
-# a good solution
-xsol1 <- c(366718.1,7650725,-1550.548,894.3784,5.632471)
-# newU <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],datacsv[,1],datacsv[,2],datacsv[,3])
-# as a check, the optimum
-# newU <- mogi_3D(G= 2000,nu=0.25,xs=xstar[1],ys=xstar[2],zs=xstar[3],a=xstar[4],p=xstar[5],datacsv[,1],datacsv[,2],datacsv[,3])
+#  choose the set of parameters to plot on the right (compare to target)
+# xsol1 <- c(366718.1,7650725,-1550.548,894.3784,5.632471) # a good solution
+xsol1 <- c(365000,7649800,-2000,500,300) # trial solution from the slides
+newU <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],datacsv[,1],datacsv[,2],datacsv[,3])
 #
 newulos <- nlos[1]*newU$x+nlos[2]*newU$y+nlos[3]*newU$z
 newulos <- matrix(newulos,nrow=nrowdata)
-# trial solution
-Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=365000,ys=7649800,zs=-2000,a=500,p=300,meas_xi,meas_yi,meas_zi)
-# good solution 1
-# Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],meas_xi,meas_yi,meas_zi)
-# as a check, the optimum
-# Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=xstar[1],ys=xstar[2],zs=xstar[3],a=xstar[4],p=xstar[5],meas_xi,meas_yi,meas_zi)
+Ucalc <- mogi_3D(G= 2000,nu=0.25,xs=xsol1[1],ys=xsol1[2],zs=xsol1[3],a=xsol1[4],p=xsol1[5],meas_xi,meas_yi,meas_zi)
 #
 uloscal <- nlos[1]*Ucalc$x+nlos[2]*Ucalc$y+nlos[3]*Ucalc$z
 wls <- t((uloscal-meas_ulos))%*%CXinv%*%(uloscal-meas_ulos) 
