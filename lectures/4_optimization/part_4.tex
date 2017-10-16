@@ -347,7 +347,7 @@ and $ys$ insensitive ($\theta \approx 3$).
 \begin{itemize}
 \item Standard GPs are limited to $n \approx 1000$ points (covariance matrix inversion).
 \item EGO clusters points in good regions, the covariance matrix may become ill-conditionned 
-if length scales $\theta_i$ are too small.
+if length scales $\theta_i$ are too large w.r.t. $X$.
 \item Although the method perfectly applies to large dimensional spaces ($d>100$), larger $d$ 
 may require larger $n$, back 2 lines above.
 \item EGO does not converge in the traditional sense: it creates dense samples in the volume of $S$. 
@@ -478,7 +478,7 @@ Some solutions are
 \begin{itemize}
 	\item[S1] Build a new model that interpolates $m(X)$ at $X$ where $m(X)$ accounts for the noise (non interpolating GP, e.g. with a white noise part in the kernel).
 	\item[S2] Include observation noise and replace $\min(F)$ by $\min(m(X))$ in the EI expression
-	\item[S3] Similar to 2 but consider an Expected Mean Improvement.
+	\item[S3] Similar to 2 but consider an Expected Mean Improvement (V. Picheny).
 \end{itemize}
 \end{frame}
 
@@ -488,7 +488,7 @@ iteration 0
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n0}
 \end{center}
-\tiny (observations not shown, they are over and under the black crosses)\\
+\tiny (noisy observations and their denoised versions are both shown as black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -497,7 +497,7 @@ iteration 1
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n1}
 \end{center}
-\tiny (observations not shown, they are over and under the black crosses)\\
+\tiny (noisy observations and their denoised versions are both shown as black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -506,7 +506,7 @@ iteration 2
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n2}
 \end{center}
-\tiny (observations not shown, they are over and under the black crosses)\\
+\tiny (noisy observations and their denoised versions are both shown as black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -515,7 +515,7 @@ iteration 3
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n3}
 \end{center}
-\tiny (observations not shown, they are over and under the black crosses)\\
+\tiny (noisy observations and their denoised versions are both shown as black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -524,7 +524,7 @@ iteration 4
 \begin{center}
 \includegraphics[height=5cm]{4_optimization/figures/python/ego_EI1n4}
 \end{center}
-\tiny (observations not shown, they are over and under the black crosses)\\
+\tiny (noisy observations and their denoised versions are both shown as black crosses)\\
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
