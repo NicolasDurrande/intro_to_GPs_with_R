@@ -308,9 +308,9 @@ We say that $X \sim \mathcal{N}(\mu,\sigma^2)$ if it has the following pdf:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Multivariate normal distribution}
 \begin{definition}
-	We say that a vector $Y=(Y_1, \dots, Y_d)^t$ follows a multivariate normal distribution if any linear combination of $Y$ follows a normal distribution:
+	We say that a vector $Y=(Y_1, \dots, Y_n)^t$ follows a multivariate normal distribution if any linear combination of $Y$ follows a normal distribution:
 	\begin{equation*}
-		\forall \alpha \in \mathds{R}^d,\ \alpha^t Y \sim \mathcal{N}
+		\forall \alpha \in \mathds{R}^n,\ \alpha^t Y \sim \mathcal{N}
 	\end{equation*}
 \end{definition}
 The distribution of a Gaussian vector is characterised by
@@ -323,7 +323,7 @@ The distribution of a Gaussian vector is characterised by
 A covariance matrix is
 \begin{itemize}
 	\item symmetric $K_{i,j}=K_{j,i}$
-	\item positive semi-definite $\forall \alpha \in \mathds{R}^d, \alpha^t K \alpha \geq 0$.
+	\item positive semi-definite $\forall \alpha \in \mathds{R}^n, \alpha^t K \alpha \geq 0$.
 \end{itemize}
 \end{frame}
 
@@ -331,7 +331,7 @@ A covariance matrix is
 \begin{frame}{}
 The density of a multivariate Gaussian is:
 \begin{equation*}
-f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{d/2} |\Sigma|^{1/2}} \exp \left(-\frac12 (x-\mu)^t \Sigma^{-1} (x-\mu)  \right).
+f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{n/2} |\Sigma|^{1/2}} \exp \left(-\frac12 (x-\mu)^t K^{-1} (x-\mu)  \right).
 \end{equation*}
 \begin{center}
  \includegraphics[height=5cm]{1_stat_models/figures/R/MVN_dens2}
@@ -347,8 +347,8 @@ f_Y(x) = \frac{1}{\displaystyle (2 \pi)^{d/2} |\Sigma|^{1/2}} \exp \left(-\frac1
 \vspace{-5mm}
 \begin{exampleblock}{Exercise}
 \begin{itemize}
-  \item For $X=(X_1,\dots,X_d)$ with $X_i$ independant and $\mathcal{N}(0,1)$, and a $d \times d$ matrix $A$, what is the distribution of $AX$?
-  \item For a given covariance matrix $K$ and independant $\mathcal{N}(0,1)$ samples, how can we generate $\mathcal{N}(\mu,K)$ random samples?
+  \item For $X=(X_1,\dots,X_n)$ with $X_i$ independent and $\mathcal{N}(0,1)$, and a $n \times n$ matrix $A$, what is the distribution of $AX$?
+  \item For a given covariance matrix $K$ and independent $\mathcal{N}(0,1)$ samples, how can we generate $\mathcal{N}(\mu,K)$ random samples?
 \end{itemize}
 \end{exampleblock}
 \alert{$\Rightarrow$ R demo}
